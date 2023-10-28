@@ -8,14 +8,12 @@ class Postcode:
     The postcode object returned by a database intermediary method
     """
 
-    POSTCODE_NOT_EXIST = 0
-
     @cache
-    def __new__(cls, postcode: str, longitude: float, latitude: float):
+    def __new__(cls, postcode: str, longitude: float, latitude: float) -> Postcode:
         """
         Simple method override for the __new__ in order to cache postcode object
         creation which helps reserve memory and allows other methods which expect
-        postcode objects to be cached to operator predictably.
+        postcode objects to be cached to operate predictably.
 
         :return: either a new or cached postcode object
         """
@@ -87,6 +85,3 @@ class Postcode:
         delta_phi = ((other.latitude - self.latitude) * pi / 180)
         delta_lambda = ((other.longitude - self.longitude) * pi / 180)
         return sin(delta_phi / 2) * sin(delta_phi / 2) + cos(phi1) * cos(phi2) * sin(delta_lambda / 2) * sin(delta_lambda / 2)
-               
-               
-print(Postcode("", 0, 0))
