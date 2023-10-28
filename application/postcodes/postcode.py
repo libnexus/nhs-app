@@ -41,7 +41,6 @@ class Postcode:
         """
         return self._postcode
 
-
     @property
     def longitude(self) -> float:
         """
@@ -61,7 +60,7 @@ class Postcode:
         return self._latitude
 
     @cache
-    def distance_between(self, other: Postcode) -> float:
+    def _distance_between(self, other: Postcode) -> float:
         """
         Uses the haversine formula to calculate the unobstructed "bird's eye view" distance between
         two postcodes over the surface of the earth as a globular entity.
@@ -70,18 +69,27 @@ class Postcode:
         :param other: the other postcode to compare the distance between
         :return: the distance between the two postcodes measured in metres
         """
-        a = self._distance_between_for_a(other)
-        c = 2 * atan2(sqrt(a), sqrt(1 - a))  # angular distance in radians
-        return 6371e3 * c  # the radius of the earth in metres multiplied by c
+        return self._distance_between(self.longitude, self.latitude, other.longitude, other.latitude)
 
-    def _distance_between_for_a(self, other: Postcode):
+    @staticmethod
+    @cache
+    def _distance_between(long1: float, lat1: float, long2: float, lat2: float):
         """
-        :param other: the other postcode being used in the main distance_between function
-        :return: the calculated value for "a" (the square of half the chord length between the two points on the globe)
-        between this postcode and the other postocde
+        Uses the haversine formula to calculate the unobstructed "bird's eye view" distance between
+        two postcodes over the surface of the earth as a globular entity.
+        An implementation of the code provided from https://www.movable-type.co.uk/scripts/latlong.html
+
+        :param long1: the first postcode's longitude
+        :param lat2: the first postcode's latitude
+        :param long2: the second postcode's longitude
+        :param lat2: the second postcode's latitude
+        :return: the distance between the two postcodes measured in metres
         """
-        phi1 = (self.latitude * pi / 180)
-        phi2 = (other.latitude * pi / 180)
-        delta_phi = ((other.latitude - self.latitude) * pi / 180)
-        delta_lambda = ((other.longitude - self.longitude) * pi / 180)
-        return sin(delta_phi / 2) * sin(delta_phi / 2) + cos(phi1) * cos(phi2) * sin(delta_lambda / 2) * sin(delta_lambda / 2)
+        phi1 = (lat1 * pi / 180)
+        phi2 = (lat2 * pi / 180)
+        delta_phi = ((lat2 - lat1) * pi / 180)
+        delta_lambda = ((long2 - long1) * pi / 180)
+        a = sin(delta_phi / 2) * sin(delta_phi / 2) + \
+            cos(phi1) * cos(phi2) * sin(delta_lambda / 2) * sin(delta_lambda / 2)
+        c = 2 * atan2(sqrt(a), sqrt(1 - a))  # angular distance in radians
+        return 6371e3 * c  # the radius of the earth in metres
