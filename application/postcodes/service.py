@@ -1,4 +1,6 @@
-from functools import cache 
+from __future__ import annotations
+from functools import cache
+from typing import Collection
 import application.postcodes.postcode as pc
 
 
@@ -7,6 +9,22 @@ class Service:
     The service object returned by a database intermediary method
     """
     
+    @staticmethod
+    def sort_by_distance(postcode: pc.Postcode, services: Collection[Service, ...]) -> tuple[Service, ...]:
+        differences = {}
+        for service in services:
+            diff = postcode.distance_between(service.postcode)
+            if diff in differences:
+                differences[diff].append(service)
+            else:
+                differences[diff] = [service]
+
+        sorted_differences = []
+        for sk in sorted(differences.keys()):
+            sorted_differences.extend(differences[sk])
+
+        return tuple(sorted_differences)
+
     @cache 
     def __new__(cls,
                 postcode: pc.Postcode,

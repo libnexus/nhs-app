@@ -40,6 +40,29 @@ class DatabaseIntermediary(ABC):
         
         :return: if the database closure was successful then true should be returned otherwise false
         """
+
+    @abstractmethod
+    @property
+    def is_connected(self) -> bool:
+        """
+        Simple getter method for checking if the database's connection is still active and therefore still
+        able to process any requests which should return either True for able to process commands or False
+        for not able to process commands. Even if this object is able to process commands, if it is not connected
+        to the database it should still return false as this method cares about connection
+
+        :return: a boolean; either True for connected or False for not connected
+        """
+
+    @abstractmethod
+    @property
+    def command_able(self) -> bool:
+        """
+        Simple getter method for checking if this object is able to process commands as though it has a
+        connection to the database even if it does not have an active connection. This allows the object to
+        implement any number of caching strategies for it's method results for assumed use
+
+        :return: a boolean; either True for able to process commands or False for unable to process commands
+        """
     
     @abstractmethod
     def get_all_postcodes(self, outcode: str | None = None) -> Collection[pc.Postcode, ...]:
@@ -69,8 +92,8 @@ class DatabaseIntermediary(ABC):
     def get_services(self, service_type: str,
                      longitude: float,
                      latitude: float,
-                     loud: float = 0.5, lold: float = 0.5,
-                     laud: float = 0.5, lald: float = 0.5
+                     loud: float = 0.1, lold: float = 0.1,
+                     laud: float = 0.1, lald: float = 0.1
                      ) -> DONT_KNOW_SERVICE | Collection[sv.Service, ...]:
         """
         Gets services matching the given service type with a longea idt dnlutiuatde within the given parameters.
@@ -88,4 +111,3 @@ class DatabaseIntermediary(ABC):
         :return: if the service isn't known then DONT_KNOW_SERVICE; otherwise a possibly empty
         collection of results which match the given parameters
         """
-

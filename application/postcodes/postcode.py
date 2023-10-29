@@ -60,7 +60,7 @@ class Postcode:
         return self._latitude
 
     @cache
-    def _distance_between(self, other: Postcode) -> float:
+    def distance_between(self, other: Postcode) -> float:
         """
         Uses the haversine formula to calculate the unobstructed "bird's eye view" distance between
         two postcodes over the surface of the earth as a globular entity.
