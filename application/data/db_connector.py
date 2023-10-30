@@ -1,6 +1,6 @@
 from __future__ import annotations
-import application.postcodes.postcode as pc
-import application.postcodes.service as sv
+import application.data.postcode as pc
+import application.data.service as sv
 from abc import ABC, abstractmethod
 from typing import Collection
 
@@ -41,8 +41,8 @@ class DatabaseIntermediary(ABC):
         :return: if the database closure was successful then true should be returned otherwise false
         """
 
-    @abstractmethod
     @property
+    @abstractmethod
     def is_connected(self) -> bool:
         """
         Simple getter method for checking if the database's connection is still active and therefore still
@@ -53,8 +53,8 @@ class DatabaseIntermediary(ABC):
         :return: a boolean; either True for connected or False for not connected
         """
 
-    @abstractmethod
     @property
+    @abstractmethod
     def command_able(self) -> bool:
         """
         Simple getter method for checking if this object is able to process commands as though it has a

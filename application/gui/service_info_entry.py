@@ -1,8 +1,9 @@
-from tkinter import Toplevel, Entry, Label, LabelFrame, Button, W, messagebox
-from typing import Callable, Collection
-import application.postcodes.postcode as pc
-import application.postcodes.service as sv
-import application.postcodes.db_connector as dbc
+from tkinter import Toplevel, Entry, Label, LabelFrame, Button, W, messagebox, NSEW
+from typing import Callable, Literal
+import application.data.postcode as pc
+import application.data.service as sv
+import application.data.db_connector as dbc
+import application.gui.service_listbox as service_listbox
 import re as regex
 
 
@@ -20,7 +21,7 @@ class ServiceInformationEntry(Toplevel):
         """
 
         :param master: the widget / frame that this object is a slave of (belongs to/in)
-        :param postcode: a postcode object to abse search results on
+        :param postcode: a postcode object to base search results on
         :param service_type: the type of service that the information entry is responsible for returning
         :param database_connector: the database intermediary the service information entry should use
         to fetch results
@@ -28,10 +29,21 @@ class ServiceInformationEntry(Toplevel):
         """
         super().__init__(master)
 
+        # set up entry information
+
         self._postcode = postcode 
         self._dbc = database_connector
         self._service_type = service_type
         self._irc = info_return_callback
+
+        # set up entry as a top level
+
+        self.resizable(False, False)
+        self.title("Results for %s near %s (0)" % (self._service_type.capitalize() + "s", self._postcode.nice_postcode))
+
+        # add elements to entry
+
+        self._service_listbox_frame = service_listbox.ServiceListbox(self)
 
         self._name_entry_frame = LabelFrame(self, text="Name")
         self._name_entry = Entry(self._name_entry_frame, width=40)
@@ -41,16 +53,20 @@ class ServiceInformationEntry(Toplevel):
         self._postcode_label = Label(self._address_entry_frame, text="Postcode")
         self._postcode_entry = Entry(self._address_entry_frame, width=10)
         self._address_1_label = Label(self._address_entry_frame, text="Address Line 1")
-        self._address_1_entry = Entry(self._address_entry_frame, width=60)
+        self._address_1a_entry = Entry(self._address_entry_frame, width=29)
+        self._address_1b_entry = Entry(self._address_entry_frame, width=29)
         self._address_2_label = Label(self._address_entry_frame, text="Address Line 2")
-        self._address_2_entry = Entry(self._address_entry_frame, width=60)
+        self._address_2a_entry = Entry(self._address_entry_frame, width=29)
+        self._address_2b_entry = Entry(self._address_entry_frame, width=29)
 
         self._postcode_label.grid(row=0, column=0, padx=5, pady=5, sticky=W)
         self._postcode_entry.grid(row=0, column=1, padx=5, sticky=W)
         self._address_1_label.grid(row=1, column=0, padx=5)
-        self._address_1_entry.grid(row=1, column=1, padx=5)
-        self._address_2_label.grid(row=2, column=0, padx=5, pady=5)
-        self._address_2_entry.grid(row=2, column=1, padx=5)
+        self._address_1a_entry.grid(row=1, column=1, padx=6)
+        self._address_1b_entry.grid(row=2, column=1, padx=5)
+        self._address_2_label.grid(row=3, column=0, padx=5, pady=5)
+        self._address_2a_entry.grid(row=3, column=1, padx=5)
+        self._address_2b_entry.grid(row=4, column=1, padx=5)
 
         self._email_entry_frame = LabelFrame(self, text="Email")
         self._email_entry = Entry(self._email_entry_frame, width=40)
@@ -60,19 +76,31 @@ class ServiceInformationEntry(Toplevel):
         self._telephone_entry = Entry(self._telephone_entry_frame, width=40)
         self._telephone_entry.grid(row=0, column=0, columnspan=2, padx=10, pady=5)
 
-        self._name_entry_frame.grid(row=0, column=1, padx=10, pady=(10, 2), sticky=W)
-        self._address_entry_frame.grid(row=1, column=1, padx=10, sticky=W)
-        self._email_entry_frame.grid(row=2, column=1, padx=10, sticky=W)
-        self._telephone_entry_frame.grid(row=3, column=1, padx=10, pady=(2, 10), sticky=W)
+        self._service_listbox_frame.grid(row=0, column=0, rowspan=5, columnspan=3, padx=10, pady=10, sticky=NSEW)
+        self._name_entry_frame.grid(row=0, column=4, padx=10, pady=(10, 2), sticky=W)
+        self._address_entry_frame.grid(row=1, column=4, padx=10, sticky=W)
+        self._email_entry_frame.grid(row=2, column=4, padx=10, sticky=W)
+        self._telephone_entry_frame.grid(row=3, column=4, padx=10, sticky=W)
+
+        # add submit button
+
+        self._submit_button = Button(self, text="Submit", command=self._submit_service_form)
+        self._submit_button.grid(row=4, column=4, columnspan=4, sticky=NSEW, padx=6, pady=(2, 10))
 
         self._selected_service: sv.Service | None = None
 
-        self.focus_set()
+        self._submit_button.focus_set()
 
-    def validate_input_fields(self) -> False | pc.Postcode:
+    def _submit_service_form(self):
+        """
+
+        """
+        self.validate_input_fields()
+
+    def validate_input_fields(self) -> Literal[False] | pc.Postcode:
         """
         Validates the input fields that are provided for manual user input. By nature of the widget
-        there is a facility provided for the user to auto-populate the fields with the information of
+        there is a facility provided for the user to automatically populate the fields with the information of
         services fetched by the database intermediary which should follow the same restrictions
         The return value is given as a boolean and not more in depth because this method assumes responsibility
         for alerting the user of their error and information surrounding it.
@@ -87,12 +115,12 @@ class ServiceInformationEntry(Toplevel):
                                  "Double check it only contains numbers, letters from the alphabet, and spaces.")
             return False
 
-        postcode_obj = self._dbc.command_able and self._dbc.get_postcode(postcode)
+        postcode_obj: bool | pc.Postcode = self._dbc.command_able and self._dbc.get_postcode(postcode)
         if not postcode_obj:
             return False
         elif postcode_obj is dbc.DatabaseIntermediary.POSTCODE_NOT_EXIST:
             messagebox.showerror("Uh Oh",
-                                 "It looks like your postcode isn't in our database of postcodes. "
+                                 "It looks like your postcode isn't in our database of data. "
                                  "Double check your postcode for any miniature errors")
             return False
 
@@ -125,7 +153,12 @@ class ServiceInformationEntry(Toplevel):
         """
         if postcode := self.validate_input_fields():
             if self._selected_service is None:
-                return sv.Service(postcode=postcode, name=self._name_entry.get(), address_line_1=self._address_1_entry.get(), address_line_2=self._address_2_entry.get(), email=self._email_entry.get(), service_type=self._service_type)
+                return sv.Service(postcode=postcode,
+                                  name=self._name_entry.get(),
+                                  address_line_1=self._address_1a_entry.get() + self._address_1b_entry.get(),
+                                  address_line_2=self._address_2a_entry.get() + self._address_2b_entry.get(),
+                                  email=self._email_entry.get(),
+                                  service_type=self._service_type)
             else:
                 return self._selected_service
 

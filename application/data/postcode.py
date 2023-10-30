@@ -42,6 +42,16 @@ class Postcode:
         return self._postcode
 
     @property
+    def nice_postcode(self) -> str:
+        """
+        The string postcode of the postcode object formatted with a space between the outcode
+        and incode
+
+        :return: the postcode formatted
+        """
+        return self._postcode[:4] + " " + self._postcode[4:]
+
+    @property
     def longitude(self) -> float:
         """
         The longitudinal coordinate that the postcode occupies on earth
@@ -63,11 +73,11 @@ class Postcode:
     def distance_between(self, other: Postcode) -> float:
         """
         Uses the haversine formula to calculate the unobstructed "bird's eye view" distance between
-        two postcodes over the surface of the earth as a globular entity.
+        two data over the surface of the earth as a globular entity.
         An implementation of the code provided from https://www.movable-type.co.uk/scripts/latlong.html
 
         :param other: the other postcode to compare the distance between
-        :return: the distance between the two postcodes measured in metres
+        :return: the distance between the two data measured in metres
         """
         return self._distance_between(self.longitude, self.latitude, other.longitude, other.latitude)
 
@@ -76,14 +86,14 @@ class Postcode:
     def _distance_between(long1: float, lat1: float, long2: float, lat2: float):
         """
         Uses the haversine formula to calculate the unobstructed "bird's eye view" distance between
-        two postcodes over the surface of the earth as a globular entity.
+        two data over the surface of the earth as a globular entity.
         An implementation of the code provided from https://www.movable-type.co.uk/scripts/latlong.html
 
         :param long1: the first postcode's longitude
         :param lat2: the first postcode's latitude
         :param long2: the second postcode's longitude
         :param lat2: the second postcode's latitude
-        :return: the distance between the two postcodes measured in metres
+        :return: the distance between the two data measured in metres
         """
         phi1 = (lat1 * pi / 180)
         phi2 = (lat2 * pi / 180)

@@ -1,7 +1,7 @@
 from __future__ import annotations
 from functools import cache
 from typing import Collection
-import application.postcodes.postcode as pc
+import application.data.postcode as pc
 
 
 class Service:
