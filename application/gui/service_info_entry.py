@@ -43,7 +43,7 @@ class ServiceInformationEntry(Toplevel):
 
         # add elements to entry
 
-        self._service_listbox_frame = service_listbox.ServiceListbox(self)
+        self._service_listbox_frame = service_listbox.ServiceListbox(self, width=280, height=300)
 
         self._name_entry_frame = LabelFrame(self, text="Name")
         self._name_entry = Entry(self._name_entry_frame, width=40)
