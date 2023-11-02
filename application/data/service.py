@@ -8,7 +8,7 @@ class Service:
     """
     The service object returned by a database intermediary method
     """
-    
+
     @staticmethod
     def sort_by_distance(postcode: pc.Postcode, services: Collection[Service, ...]) -> tuple[Service, ...]:
         differences = {}
@@ -39,6 +39,7 @@ class Service:
 
         :return: either a new or cached service object
         """
+        return super().__new__(cls)
         
     def __init__(self,
                  postcode: pc.Postcode,
