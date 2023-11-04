@@ -1,11 +1,11 @@
+import re as regex
 from tkinter import Toplevel, Entry, Label, LabelFrame, Button, W, messagebox, NSEW
 from typing import Callable, Literal
+
+import application.data.db_connector as dbc
 import application.data.postcode as pc
 import application.data.service as sv
-import application.data.db_connector as dbc
 import application.gui.service_listbox as service_listbox
-import re as regex
-
 
 EMAIL_REGEX: regex.Pattern = ...
 TELEPHONE_REGEX: regex.Pattern = ...
@@ -31,7 +31,7 @@ class ServiceInformationEntry(Toplevel):
 
         # set up entry information
 
-        self._postcode = postcode 
+        self._postcode = postcode
         self._dbc = database_connector
         self._service_type = service_type
         self._irc = info_return_callback
@@ -41,12 +41,14 @@ class ServiceInformationEntry(Toplevel):
         self.resizable(False, False)
         self.title("Results for %s near %s (0)" % (self._service_type.capitalize() + "s", self._postcode.nice_postcode))
 
-        # add elements to entry
+        # add services list
 
-        self._service_listbox_frame = service_listbox.ServiceListbox(self, width=280, height=300)
+        self._service_listbox_frame = service_listbox.ServiceListbox(self, self.propagate_entry_fields, width=10)
+
+        # add edit elements to entry
 
         self._name_entry_frame = LabelFrame(self, text="Name")
-        self._name_entry = Entry(self._name_entry_frame, width=40)
+        self._name_entry = Entry(self._name_entry_frame, width=43)
         self._name_entry.grid(row=0, column=0, columnspan=2, padx=10, pady=5)
 
         self._address_entry_frame = LabelFrame(self, text="Address")
@@ -69,11 +71,11 @@ class ServiceInformationEntry(Toplevel):
         self._address_2b_entry.grid(row=4, column=1, padx=5)
 
         self._email_entry_frame = LabelFrame(self, text="Email")
-        self._email_entry = Entry(self._email_entry_frame, width=40)
+        self._email_entry = Entry(self._email_entry_frame, width=43)
         self._email_entry.grid(row=0, column=0, columnspan=2, padx=10, pady=5)
 
         self._telephone_entry_frame = LabelFrame(self, text="Telephone")
-        self._telephone_entry = Entry(self._telephone_entry_frame, width=40)
+        self._telephone_entry = Entry(self._telephone_entry_frame, width=43)
         self._telephone_entry.grid(row=0, column=0, columnspan=2, padx=10, pady=5)
 
         self._service_listbox_frame.grid(row=0, column=0, rowspan=5, columnspan=3, padx=10, pady=10, sticky=NSEW)
@@ -90,6 +92,15 @@ class ServiceInformationEntry(Toplevel):
         self._selected_service: sv.Service | None = None
 
         self._submit_button.focus_set()
+
+    def propagate_entry_fields(self,
+                               name: str,
+                               postcode: str,
+                               address_line_1: str,
+                               address_line_2: str,
+                               email: str,
+                               telephone: str):
+        ...
 
     def _submit_service_form(self):
         """
@@ -188,6 +199,7 @@ class ServiceInformationEntry(Toplevel):
                 messagebox.showerror("Uh Oh", "The program was unable to look for services")
                 return
             results = self._dbc.get_services(self._service_type, self._postcode.longitude, self._postcode.latitude,
-                                             loud=search_params, lold=search_params, laud=search_params, lald=search_params)
+                                             loud=search_params, lold=search_params, laud=search_params,
+                                             lald=search_params)
             search_params += .1
         return tuple(results)

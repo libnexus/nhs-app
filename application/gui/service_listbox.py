@@ -1,58 +1,69 @@
-from tkinter import Scrollbar, LabelFrame, Frame, X, Y, RIGHT, BOTH, YES, NO, VERTICAL, NW, Canvas, NSEW, Label
+from tkinter import LabelFrame, Label, Canvas, Scrollbar, Frame, BOTH, LEFT, RIGHT, Y, NW, Event
+
 import application.data.service as sv
-import application.data.postcode as pc
 
 
 class ServicePreview(Frame):
-    def __init__(self, master, service: sv.Service, *args, **kwargs):
+    def __init__(self, master, service: sv.Service, propagate_callback, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self._service_object = service
         self._name = Label(self, text=service.name)
         self._email = Label(self, text=service.email)
         self._name.grid(row=0, column=0)
         self._email.grid(row=1, column=0)
+        self._propagate_callback = propagate_callback
+        self.bind("<Button-1>", self.single_click)
+        self.bind("<Double-Button-1>", self.single_click)
+
+    def single_click(self, event: Event):
+        ...
+
+    def double_click(self, event: Event):
+        ...
 
 
 class ServiceListbox(LabelFrame):
-    def __init__(self, master, width: int, height: int, *args, **kwargs):
-        super().__init__(master, width=width, height=height, text="Results", *args, **kwargs)
+    def __init__(self, master, propagate_callback, *args, svw=200, **kwargs):
+        """
+        TODO docstring
+        """
+        super().__init__(master, text="Results", *args, **kwargs)
         self._services: list[sv.Service, ...] = []
-        self._display_frame = ScrollableFrame(self, width, height, height * 10, padx=10, pady=20)
-        self._service = ServicePreview(self._display_frame,
-                                       sv.Service(pc.Postcode("LL001YZ", -42.209, 5.117), "Alpha Ind.",
-                                                  "Some manner of address line 1",
-                                                  "Some manner of address line 2",
-                                                  "some-gp@bangor.ac.uk", "GP"))
-        self._service.pack(expand=YES, fill=X)
-        self._service.config(background="#00ff00")
-        self._display_frame.canvas.pack(expand=YES, fill=BOTH)
-        self._display_frame.pack(expand=YES, fill=BOTH)
+        self._display_frame = ScrollView(self, width=svw)
+        self._display_frame.pack(fill=BOTH, expand=0)
+        self._propagate_callback = propagate_callback
+        self._shown_services: list[ServicePreview, ...] = []
+
+    def clear_services(self):
+        for preview in self._shown_services:
+            preview.destroy()
+        self._shown_services.clear()
+
+    def add_new_service(self, service: sv.Service):
+        preview = ServicePreview(self._display_frame.scrollable_frame, self._propagate_callback, service)
+        self._shown_services.append(preview)
 
 
-class ScrollableFrame(Frame):
-    def __init__(self, master, width, height, scy, *args, **kwargs):
-        """
-        Creates a scrollable frame for the Y axis which has a vertical scrollbar
+class ScrollView(Frame):
+    """
+    https://blog.teclado.com/tkinter-scrollable-frames/
+    """
 
-        :param master: The master frame to which this frame is a slave
-        :param width: the width of the frame; required so canvas can mimic it's dimensions
-        :param height: the height of the frame; required so canvas can mimic its dimensions
-        :param scy: the maximum scrolling y that can be scrolled to, is added to height
-        :param args: any positional arguments for the frame class
-        :param kwargs: any keyword arguments for the frame class
-        """
-        self._canvas = Canvas(master, width=width, height=height)
-        self._canvas.config(scrollregion=(0, 0, width, height + scy))
-        super().__init__(self._canvas, *args, **kwargs)
-        self._scrollbar = Scrollbar(master, orient=VERTICAL)
-        self._canvas.create_window((width, height), window=self, anchor=NW)
-        self._canvas.config(yscrollcommand=self._scrollbar.set)
-        self._scrollbar.config(command=self._canvas.yview)
+    def __init__(self, master, *args, **kwargs):
+        super().__init__(master, *args, **kwargs)
+        self._canvas = Canvas(self, *args, **kwargs)
+        self._scrollbar = Scrollbar(self, orient="vertical", command=self._canvas.yview)
+        self._scrollable_frame = Frame(self._canvas)
+        self._scrollable_frame.bind("<Configure>",
+                                    lambda e: self._canvas.configure(scrollregion=self._canvas.bbox("all")))
+        self._canvas.create_window((0, 0), window=self.scrollable_frame, anchor=NW)
+        self._canvas.configure(yscrollcommand=self._scrollbar.set)
+        self._canvas.pack(side=LEFT, expand=False)
         self._scrollbar.pack(side=RIGHT, fill=Y)
 
     @property
-    def scrollbar(self) -> Scrollbar:
-        return self._scrollbar
+    def scrollable_frame(self) -> Frame:
+        return self._scrollable_frame
 
     @property
     def canvas(self) -> Canvas:

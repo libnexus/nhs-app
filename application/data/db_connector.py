@@ -1,8 +1,10 @@
 from __future__ import annotations
-import application.data.postcode as pc
-import application.data.service as sv
+
 from abc import ABC, abstractmethod
 from typing import Collection
+
+import application.data.postcode as pc
+import application.data.service as sv
 
 
 class DatabaseIntermediary(ABC):
@@ -12,7 +14,7 @@ class DatabaseIntermediary(ABC):
     @abstractmethod
     def __init__(self):
         ...
-    
+
     @abstractmethod
     def init_db(self) -> bool:
         """
@@ -26,7 +28,7 @@ class DatabaseIntermediary(ABC):
         
         :return: if the database initialization was successful then true should be returned otherwise false
         """
-    
+
     @abstractmethod
     def close_db(self) -> bool:
         """
@@ -63,7 +65,7 @@ class DatabaseIntermediary(ABC):
 
         :return: a boolean; either True for able to process commands or False for unable to process commands
         """
-    
+
     @abstractmethod
     def get_all_postcodes(self, outcode: str | None = None) -> Collection[pc.Postcode, ...]:
         """
@@ -76,7 +78,7 @@ class DatabaseIntermediary(ABC):
         
         :return: some collection of postcode objects 
         """
-        
+
     @abstractmethod
     def get_postcode(self, postcode: str) -> pc.Postcode | POSTCODE_NOT_EXIST:
         """
@@ -92,8 +94,10 @@ class DatabaseIntermediary(ABC):
     def get_services(self, service_type: str,
                      longitude: float,
                      latitude: float,
-                     loud: float = 0.1, lold: float = 0.1,
-                     laud: float = 0.1, lald: float = 0.1
+                     distance: float,
+                     distance_from_postcode: pc.Postcode | None = None,
+                     distance_from_coordinates: tuple[float, float] | None = None,
+                     max_number=0
                      ) -> DONT_KNOW_SERVICE | Collection[sv.Service, ...]:
         """
         Gets services matching the given service type with a longea idt dnlutiuatde within the given parameters.
@@ -102,11 +106,13 @@ class DatabaseIntermediary(ABC):
 
         :param service_type: the type of service that should be fetched e.g. "GP"
         :param longitude: the longitude that the service's postcode is at
-        :param latitude: the latitude that the service's postcide is at
-        :param loud: the longitude's upper difference
-        :param lold: the longitude's lower difference
-        :param laud: the latitude's upper difference
-        :param lald: the latitude's lower difference
+        :param latitude: the latitude that the service's postcode is at
+        :param distance: the farthest distance (in metres) from either the given postcode or coordinates
+        :param distance_from_postcode: if the distance should be checked from a postcode then a postcode object
+        :param distance_from_coordinates: if the distance should be checked from coordinates, a vector of floats
+        in the order of longitude, latitude
+        :param max_number: the maximum amount of return results expected. If any integer below 1, then it should return
+        all results which fit
 
         :return: if the service isn't known then DONT_KNOW_SERVICE; otherwise a possibly empty
         collection of results which match the given parameters
