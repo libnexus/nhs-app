@@ -27,7 +27,6 @@ class Main(Frame):
         if not self._jdbi.init_db():
             showerror("Uh Oh", "The database had trouble connecting. Try restarting the program.")
             raise SystemExit
-        root.state("iconic")
 
         self._gp: Service | None = None
         self._dentist: Service | None = None
