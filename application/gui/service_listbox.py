@@ -8,18 +8,14 @@ class ServicePreview(Frame):
         super().__init__(master, *args, **kwargs)
         self._service_object = service
         self._name = Label(self, text=service.name)
-        self._email = Label(self, text=service.email)
+        self._email = Label(self, text=service.postcode.nice_postcode)
         self._name.grid(row=0, column=0)
         self._email.grid(row=1, column=0)
         self._propagate_callback = propagate_callback
-        self.bind("<Button-1>", self.single_click)
-        self.bind("<Double-Button-1>", self.single_click)
-
-    def single_click(self, event: Event):
-        ...
+        self._name.bind("<Double-Button-1>", self.double_click)
 
     def double_click(self, event: Event):
-        ...
+        self._propagate_callback(self._service_object)
 
 
 class ServiceListbox(LabelFrame):
@@ -38,10 +34,13 @@ class ServiceListbox(LabelFrame):
         for preview in self._shown_services:
             preview.destroy()
         self._shown_services.clear()
+        self.update()
 
     def add_new_service(self, service: sv.Service):
-        preview = ServicePreview(self._display_frame.scrollable_frame, self._propagate_callback, service)
+        preview = ServicePreview(self._display_frame.scrollable_frame, service, self._propagate_callback)
+        preview.pack(fill=Y, expand=False)
         self._shown_services.append(preview)
+        self.update()
 
 
 class ScrollView(Frame):
