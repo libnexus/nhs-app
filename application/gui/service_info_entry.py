@@ -87,7 +87,8 @@ class ServiceInformationEntry(Toplevel):
         self._email_entry.grid(row=0, column=0, columnspan=2, padx=10, pady=5)
 
         self._telephone_entry_frame = LabelFrame(self, text="Telephone")
-        self._telephone_entry = Entry(self._telephone_entry_frame, width=43)
+        self._telephone_field = StringVar()
+        self._telephone_entry = Entry(self._telephone_entry_frame, width=43, textvariable=self._telephone_field)
         self._telephone_entry.grid(row=0, column=0, columnspan=2, padx=10, pady=5)
 
         self._service_listbox_frame.grid(row=0, column=0, rowspan=5, columnspan=3, padx=10, pady=10, sticky=NSEW)
@@ -109,7 +110,7 @@ class ServiceInformationEntry(Toplevel):
         self._name_field.set(service.name)
         self._postcode_field.set(service.postcode.nice_postcode)
         self._email_field.set(service.email)
-
+        self._telephone_field.set(service.telephone)
 
     def _submit_service_form(self):
         """
@@ -209,6 +210,7 @@ class ServiceInformationEntry(Toplevel):
                 messagebox.showerror("Uh Oh", "The program was unable to look for services")
                 return
             results = self._dbc.get_services(self._service_type, self._postcode.longitude, self._postcode.latitude,
-                                             distance=search_params * 1609, distance_from_postcode=self._postcode, max_number=amount)
+                                             distance=search_params * 1609, distance_from_postcode=self._postcode,
+                                             max_number=amount)
             search_params += 1
         return tuple(results)

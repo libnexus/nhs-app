@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 from functools import cache
 from typing import Collection
+
 import application.data.postcode as pc
 
 
@@ -25,13 +27,14 @@ class Service:
 
         return tuple(sorted_differences)
 
-    @cache 
+    @cache
     def __new__(cls,
                 postcode: pc.Postcode,
                 name: str,
                 address_line_1: str,
                 address_line_2: str,
                 email: str,
+                telephone: str,
                 service_type: str):
         """
         Simple method override for the __new__ in order to cache service object
@@ -40,13 +43,14 @@ class Service:
         :return: either a new or cached service object
         """
         return super().__new__(cls)
-        
+
     def __init__(self,
                  postcode: pc.Postcode,
                  name: str,
                  address_line_1: str,
                  address_line_2: str,
                  email: str,
+                 telephone: str,
                  service_type: str):
         """
         Initializer method to create private fields for the service object
@@ -56,6 +60,7 @@ class Service:
         :param address_line_1: the first line of the full address of the service; shouldn't be empty
         :param address_line_2: the second line of the full address of the service; may be empty
         :param email: an email address if available for the service; may be empty
+        :param telephone: a telephone number if available for the service; may be empty
         :param service_type: a service type, written as a database intermediary may find it e.g. "SCHOOL";
         should be in all caps
         """
@@ -64,8 +69,9 @@ class Service:
         self._address_line_1 = address_line_1
         self._address_line_2 = address_line_2
         self._email = email
+        self._telephone = telephone
         self._service_type = service_type
-    
+
     @property
     def postcode(self) -> pc.Postcode:
         """
@@ -74,45 +80,57 @@ class Service:
         :return: a postcode object
         """
         return self._postcode
-    
+
     @property
-    def name(self):
+    def name(self) -> str:
         """
         The name of the service as it is to be addressed
         
         :return: the name as a string
         """
-        return self._name
-    
+        if len(self._name) > 20:
+            return self._name[:20] + "..."
+        else:
+            return self._name
+
     @property
-    def address_line_1(self):
+    def address_line_1(self) -> str:
         """
         The first line of the full address of the service which will not be an empty string
         
         :return: a non-empty string, the first line of the address of the service
         """
         return self._address_line_1
-        
+
     @property
-    def address_line_2(self):
+    def address_line_2(self) -> str:
         """
         The second line of the full address of the service which may be an empty string
         
         :return: a possibly empty string, the second line of the adress of the service
         """
         return self._address_line_2
-        
+
     @property
-    def email(self):
+    def email(self) -> str:
         """
         The email of the service if available that can be used to contact the main service
         
         :return: a possibly empty string, the email of the service
         """
         return self._email
-    
+
     @property
-    def service_type(self):
+    def telephone(self) -> str:
+        """
+        The telephone number of the service if available
+
+        :return: a possible empty strnig; the email of the service
+        """
+        return self._telephone
+
+    @property
+    def service_type(self) -> str:
         """
         The type of service that the service object represents, which should be expected to be: "SCHOOL-NURSERY",
         "GP", "OPTICIAN", "DENTIST" or any other type which may be supported in future. It will not be empty

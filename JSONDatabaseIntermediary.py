@@ -24,7 +24,7 @@ def objectify_service(service: dict, postcode: pc.Postcode) -> sv.Service:
         address = service["address"].split(", ")
     addr1 = address[0]
     addr2 = addr1[1:]
-    return sv.Service(postcode, service["name"], addr1, addr2, service["email"], service["type"].upper())
+    return sv.Service(postcode, service["name"], addr1, addr2, service["email"], service["telephone"], service["type"].upper())
 
 
 class JSONDatabaseIntermediary(DatabaseIntermediary):
@@ -96,7 +96,7 @@ class JSONDatabaseIntermediary(DatabaseIntermediary):
                     for service in services:
                         if len(services_found) == max_number:
                             break
-                        services_found.append(objectify_service(service, postcode_obj))
+                        service["type"].upper() == service_type and services_found.append(objectify_service(service, postcode_obj))
         else:
             for postcode, services in self._services.items():
                 postcode_obj = self.get_postcode(postcode)
@@ -104,5 +104,5 @@ class JSONDatabaseIntermediary(DatabaseIntermediary):
                     continue
                 if check_distance(postcode_obj):
                     for service in services:
-                        services_found.append(objectify_service(service, postcode_obj))
+                        service["type"].upper() == service_type and services_found.append(objectify_service(service, postcode_obj))
         return services_found

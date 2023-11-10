@@ -13,6 +13,7 @@ class ServicePreview(Frame):
         self._email.grid(row=1, column=0)
         self._propagate_callback = propagate_callback
         self._name.bind("<Double-Button-1>", self.double_click)
+        self._email.bind("<Double-Button-1>", self.double_click)
 
     def double_click(self, event: Event):
         self._propagate_callback(self._service_object)

@@ -1,4 +1,4 @@
-from tkinter import Tk, Frame, BOTH, YES
+from tkinter import Tk, Frame, BOTH, YES, LabelFrame, Entry
 from tkinter.messagebox import showerror
 
 import JSONDatabaseIntermediary as jdbi
@@ -16,8 +16,8 @@ class F(Frame):
             showerror("Uh Oh", "The database had trouble connecting. Try restarting the program.")
             raise SystemExit
         self._service_info_entry = service_info_entry.ServiceInformationEntry(root,
-                                                                              self._jdbi.get_postcode("LL571US"),
-                                                                              "SCHOOL",
+                                                                              self._jdbi.get_postcode("LL572EH"),
+                                                                              "GP",
                                                                               self._jdbi,
                                                                               lambda obj: print("returned", obj))
         root.state("iconic")
