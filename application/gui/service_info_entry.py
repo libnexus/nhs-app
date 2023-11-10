@@ -106,11 +106,19 @@ class ServiceInformationEntry(Toplevel):
 
         self._submit_button.focus_set()
 
+    @property
+    def service(self) -> sv.Service:
+        """
+        Returns the service that the service info entry will have
+        """
+        return self._selected_service
+
     def propagate_entry_fields(self, service: sv.Service):
         self._name_field.set(service.name)
         self._postcode_field.set(service.postcode.nice_postcode)
         self._email_field.set(service.email)
         self._telephone_field.set(service.telephone)
+        self._selected_service = service
 
     def _submit_service_form(self):
         """
