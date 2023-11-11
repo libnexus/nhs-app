@@ -34,8 +34,35 @@ class Main(Frame):
         self._schools: list[Service, ...] = []
 
         # Menu
-
+        # ref: https://pythonspot.com/tk-menubar/
         self._menu = Menu(root)
+        filemenu = Menu(self._menu, tearoff=0)
+        filemenu.add_command(label="New", command=self._file_new)
+        filemenu.add_command(label="Open", command=self._file_open)
+        filemenu.add_command(label="Open recent", command=self._file_open_recent)
+        filemenu.add_command(label="Save As", command=self._file_save_as)
+        filemenu.add_command(label="Export", command=self._file_export)
+        filemenu.add_command(label="Import", command=self._file_import)
+        filemenu.add_separator()
+        # Added exit option in menu, not needed but nice addition
+        filemenu.add_command(label="Exit", command=root.quit)
+        self._menu.add_cascade(label="File", menu=filemenu)
+
+        formmenu = Menu(self._menu, tearoff=0)
+        formmenu.add_command(label="Clear", command=self._form_clear)
+        formmenu.add_command(label="Copy", command=self._form_copy)
+        formmenu.add_separator()
+        formmenu.add_command(label="Preview", command=self._form_preview)
+        self._menu.add_cascade(label="Form",menu=formmenu)
+
+        helpmenu = Menu(self._menu, tearoff=0)
+        helpmenu.add_command(label="User Manual", command=self._help_user_manual)
+        helpmenu.add_command(label="Version Info", command=self._help_version_info)
+        self._menu.add_cascade(label="Help", menu=helpmenu)
+
+        root.config(menu=self._menu)
+
+
 
     def _compile_information_to_string(self) -> str:
         """
@@ -53,6 +80,42 @@ class Main(Frame):
             information += _service_info(school)
 
         return information
+
+    def _file_new(self):
+        pass
+
+    def _file_open(self):
+        pass
+
+    def _file_open_recent(self):
+        pass
+
+    def _file_save(self):
+        pass
+
+    def _file_save_as(self):
+        pass
+
+    def _file_export(self):
+        pass
+
+    def _file_import(self):
+        pass
+
+    def _form_clear(self):
+        pass
+
+    def _form_copy(self):
+        pass
+
+    def _form_preview(self):
+        pass
+
+    def _help_user_manual(self):
+        pass
+
+    def _help_version_info(self):
+        pass
 
 
 main = Main(root)
