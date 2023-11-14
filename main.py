@@ -35,6 +35,7 @@ class Main(Frame):
 
         # Menu
         # ref: https://pythonspot.com/tk-menubar/
+        #test
         self._menu = Menu(root)
         filemenu = Menu(self._menu, tearoff=0)
         filemenu.add_command(label="New", command=self._file_new)
