@@ -10,6 +10,8 @@ import application.data.service as sv
 class DatabaseIntermediary(ABC):
     POSTCODE_NOT_EXIST = 0
     DONT_KNOW_SERVICE = 1
+    POSTCODE_EXIST = 2
+    FAILED_TO_DELETE = 3
 
     @abstractmethod
     def __init__(self):
@@ -117,3 +119,59 @@ class DatabaseIntermediary(ABC):
         :return: if the service isn't known then DONT_KNOW_SERVICE; otherwise a possibly empty
         collection of results which match the given parameters
         """
+
+    @abstractmethod
+    def add_service(self, service: sv.Service):
+        """
+        
+        Adds new service to the database
+
+        :param service: the service to be added to the database
+
+        """
+    
+    @abstractmethod
+    def add_postcode(self, postcode: pc.Postcode) -> POSTCODE_EXIST | None:
+        """
+        
+        Adds new postcode to the database
+        Should check if entered postcode is a duplicate, if so return POSTCODE_EXIST 
+
+        :param postcode: the postcode to be added to the database
+        :return: an error if postcode exists, else nothing
+
+        """
+
+
+    @abstractmethod
+    def update_service(self, service: sv.Service, name: str, email: str, phonenumber: int) -> sv.Service:
+        """
+
+        can change the name, email, and/or phone number of an existing service, and updates the database externally.
+
+        :param service: the service to be updated
+        :return: returns new service object
+        
+        """
+
+    @abstractmethod
+    def del_postcode(self, postcode: pc.Postcode) -> POSTCODE_NOT_EXIST | FAILED_TO_DELETE | None:
+        """
+        
+        deletes existing postcode, returns error if the task was not able to be executed, or if postcode doesnt exist
+
+        :param postcode: postcode to be deleted
+        :return: returns error if postcode doesnt exist or it failed, else nothing
+
+        """
+
+    @abstractmethod
+    def del_service(self, service: sv.Service) -> DONT_KNOW_SERVICE | FAILED_TO_DELETE | None:
+        """
+        deletes existing service, returns error if the task was not able to be executed, or if service doesnt exist
+
+        :param service: service to be deleted
+        :return: returns error if service doesnt exist or it failed, else nothing
+
+        """
+    
