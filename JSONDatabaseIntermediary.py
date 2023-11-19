@@ -28,6 +28,21 @@ def objectify_service(service: dict, postcode: pc.Postcode) -> sv.Service:
 
 
 class JSONDatabaseIntermediary(DatabaseIntermediary):
+    def add_service(self, service: sv.Service):
+        pass
+
+    def add_postcode(self, postcode: pc.Postcode) -> POSTCODE_EXIST | None:
+        pass
+
+    def update_service(self, service: sv.Service, name: str, email: str, phonenumber: int) -> sv.Service:
+        pass
+
+    def del_postcode(self, postcode: pc.Postcode) -> POSTCODE_NOT_EXIST | FAILED_TO_DELETE | None:
+        pass
+
+    def del_service(self, service: sv.Service) -> DONT_KNOW_SERVICE | FAILED_TO_DELETE | None:
+        pass
+
     def __init__(self):
         self._postcodes: dict = {}
         self._services: dict = {}

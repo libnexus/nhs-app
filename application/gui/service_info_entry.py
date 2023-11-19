@@ -117,6 +117,8 @@ class ServiceInformationEntry(Toplevel):
         self._name_field.set(service.name)
         self._postcode_field.set(service.postcode.nice_postcode)
         self._email_field.set(service.email)
+        if len(service.address_line_1) < 27:
+            self._address_1l1.set(service.address_line_1)
         self._telephone_field.set(service.telephone)
         self._selected_service = service
 

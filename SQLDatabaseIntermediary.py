@@ -104,6 +104,6 @@ class DBConnector(DatabaseIntermediary):
         cur.execute(
             f"""
             SELECT * FROM Service 
-            WHERE longitude < {longitude + dis} AND latitude < {latitude} + 1 
+            WHERE longitude < {longitude + distance} AND latitude < {latitude} + 1 
             AND {longitude - 1} < longitude AND {latitude}"""
         )
