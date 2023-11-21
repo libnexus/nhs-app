@@ -31,16 +31,16 @@ class JSONDatabaseIntermediary(DatabaseIntermediary):
     def add_service(self, service: sv.Service):
         pass
 
-    def add_postcode(self, postcode: pc.Postcode) -> POSTCODE_EXIST | None:
+    def add_postcode(self, postcode: pc.Postcode) -> DatabaseIntermediary.POSTCODE_EXIST | None:
         pass
 
     def update_service(self, service: sv.Service, name: str, email: str, phonenumber: int) -> sv.Service:
         pass
 
-    def del_postcode(self, postcode: pc.Postcode) -> POSTCODE_NOT_EXIST | FAILED_TO_DELETE | None:
+    def del_postcode(self, postcode: pc.Postcode) -> DatabaseIntermediary.POSTCODE_NOT_EXIST | DatabaseIntermediary.FAILED_TO_DELETE | None:
         pass
 
-    def del_service(self, service: sv.Service) -> DONT_KNOW_SERVICE | FAILED_TO_DELETE | None:
+    def del_service(self, service: sv.Service) -> DatabaseIntermediary.DONT_KNOW_SERVICE | DatabaseIntermediary.FAILED_TO_DELETE | None:
         pass
 
     def __init__(self):

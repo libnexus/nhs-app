@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 from os.path import abspath
-from tkinter.messagebox import showerror
-from tkinter.ttk import Notebook
 from tkinter import Menu
 from tkinter import filedialog
-import json
+from tkinter.messagebox import showerror
+from tkinter.ttk import Notebook
 
 import JSONDatabaseIntermediary as jdbi
-
+import application.gui.form as form
 
 
 class App(Notebook):
@@ -50,7 +49,7 @@ class App(Notebook):
         help_menu.add_command(label="Version Info", command=self._help_version_info)
         self._menu.add_cascade(label="Help", menu=help_menu)
 
-        self.master.config(menu=self._menu)
+        self.winfo_toplevel().config(menu=self._menu)
 
         self._file_menu = file_menu
         self._form_menu = form_menu
@@ -66,7 +65,7 @@ class App(Notebook):
         """
 
         with open(self._operating_dir + file_name, "w+") as file:
-            file.write()
+            file.write(...)
 
     def _file_new(self):
         pass
@@ -78,11 +77,16 @@ class App(Notebook):
         pass
 
     def _file_save(self):
-        file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
+        # changed json files to .form files as the extension is more explanatory
+
+        file_path = filedialog.asksaveasfilename(defaultextension=".form", filetypes=[("Form files", "*.form")])
+
+        # use an attribute for the file path and trigger the dialog when that attribute is None
+        # that way if the attribute is not None it automatically saves (normal behaviour of a save command)
 
         if file_path:
             data = {
-                "gp": form._export_service_to_json(gp)
+                "gp": form.Form.export_service_to_json(self.active_form.gp)
             }
 
     def _file_save_as(self):
@@ -108,3 +112,7 @@ class App(Notebook):
 
     def _help_version_info(self):
         pass
+
+    @property
+    def active_form(self) -> form.Form:
+        return self.select()

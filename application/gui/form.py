@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from tkinter import Frame, Menu
+from typing import Collection
 
-import application.gui.app as app
+from application.data import postcode as pc, service as sv
 from application.data.service import Service
 from application.data.postcode import Postcode
 from application.data.form_container import FormInformation
@@ -21,8 +22,34 @@ def _service_info(service: Service):
 
 
 class Form(Frame, FormInformation):
-    def __init__(self, master: app.App, *args, **kwargs):
+    @property
+    def gp(self) -> sv.Service:
+        return self._gp
+
+    @property
+    def optician(self) -> sv.Service:
+        return self._optician
+
+    @property
+    def dentist(self) -> sv.Service:
+        return self._dentist
+
+    @property
+    def schools(self) -> Collection[sv.Service, ...]:
+        return self._schools
+
+    @property
+    def postcode(self) -> pc.Postcode:
+        pass
+
+    def __init__(self, master, postcode: Postcode, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
+
+        self._postcode: Postcode = postcode
+        self._gp: Service | None = None
+        self._dentist: Service | None = None
+        self._optician: Service | None = None
+        self._schools: list[Service, ...] = []
 
         self._boof = Frame(self, width=400, height=400)
         self._boof.pack()
@@ -44,14 +71,15 @@ class Form(Frame, FormInformation):
 
         return information
 
-    def _export_service_to_json(self, service: Service) -> dict:
+    @staticmethod
+    def export_service_to_json(service: Service) -> dict:
         """
         Converts a service to a json representation of the service
 
         (replace inside the curly braces)
         """
         return {
-            "postcode": service.postcode,
+            "postcode": service.postcode.postcode,
             "name": service.name,
             "address_line_1": service.address_line_1,
             "address_line_2": service.address_line_2,
@@ -60,7 +88,8 @@ class Form(Frame, FormInformation):
             "service_type": service.service_type,
         }
 
-    def _import_service_from_json(self, service: dict) -> Service:
+    @staticmethod
+    def import_service_from_json(service: dict) -> Service:
         """
         Converts a jsonified service to a service object
 
