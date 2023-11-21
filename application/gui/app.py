@@ -4,8 +4,11 @@ from os.path import abspath
 from tkinter.messagebox import showerror
 from tkinter.ttk import Notebook
 from tkinter import Menu
+from tkinter import filedialog
+import json
 
 import JSONDatabaseIntermediary as jdbi
+
 
 
 class App(Notebook):
@@ -26,6 +29,7 @@ class App(Notebook):
         file_menu.add_command(label="New", command=self._file_new)
         file_menu.add_command(label="Open", command=self._file_open)
         file_menu.add_command(label="Open recent", command=self._file_open_recent)
+        file_menu.add_command(label="Save", command=self._file_save)
         file_menu.add_command(label="Save As", command=self._file_save_as)
         file_menu.add_command(label="Export", command=self._file_export)
         file_menu.add_command(label="Import", command=self._file_import)
@@ -74,7 +78,12 @@ class App(Notebook):
         pass
 
     def _file_save(self):
-        pass
+        file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
+
+        if file_path:
+            data = {
+                "gp": form._export_service_to_json(gp)
+            }
 
     def _file_save_as(self):
         pass

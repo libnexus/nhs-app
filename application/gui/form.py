@@ -50,11 +50,28 @@ class Form(Frame, FormInformation):
 
         (replace inside the curly braces)
         """
-        return {...: ...}
+        return {
+            "postcode": service.postcode,
+            "name": service.name,
+            "address_line_1": service.address_line_1,
+            "address_line_2": service.address_line_2,
+            "email": service.email,
+            "telephone": service.telephone,
+            "service_type": service.service_type,
+        }
 
     def _import_service_from_json(self, service: dict) -> Service:
         """
         Converts a jsonified service to a service object
 
         """
-        return Service(...)
+        postcode = Postcode(service.get("postcode", ""))
+        name = service.get("name", "")
+        address_line_1 = service.get("address_line_1", "")
+        address_line_2 = service.get("address_line_2", "")
+        email = service.get("email", "")
+        telephone = service.get("telephone", "")
+        service_type = service.get("service_type", "")
+
+        return Service(postcode=postcode, name=name, address_line_1=address_line_1, address_line_2=address_line_2,
+                       email=email, telephone=telephone, service_type=service_type)
