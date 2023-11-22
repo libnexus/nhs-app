@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from tkinter import Frame, Menu
+from tkinter import Frame
 from typing import Collection
 
 from application.data import postcode as pc, service as sv
-from application.data.service import Service
-from application.data.postcode import Postcode
 from application.data.form_container import FormInformation
+from application.data.postcode import Postcode
+from application.data.service import Service
 
 
 def _service_info(service: Service):
@@ -41,6 +41,28 @@ class Form(Frame, FormInformation):
     @property
     def postcode(self) -> pc.Postcode:
         return self._postcode
+
+    def service_info(self,
+                     gp: Service | None = None,
+                     dentist: Service | None = None,
+                     optician: Service | None = None,
+                     schools: Collection[Service, ...] | None = None):
+        """
+        Sets the services of the form. Uses keyword arguments.
+
+        :param gp: the new gp to set
+        :param dentist: the new dentist to set
+        :param optician: the new optician to set
+        :param schools: the new schools to set
+        """
+        if gp:
+            self._gp = gp
+        if dentist:
+            self._dentist = dentist
+        if optician:
+            self._optician = optician
+        if schools:
+            self._schools = schools
 
     def __init__(self, master, postcode: Postcode, *args, **kwargs):
         super().__init__(master, *args, **kwargs)

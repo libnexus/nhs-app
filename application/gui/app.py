@@ -128,6 +128,17 @@ class App(Notebook):
             with open(file_path, "r") as file:
                 data = json.load(file)
 
+        """
+        This won't work as you intend, the active form is only a getter for information. For this you'll need to likely
+        use:
+        _some_form = form.Form(...)
+        self.add(_some_form)
+        This will create a new form object and then add it as a tab in the notebook
+        
+        self.active_form.service_info(...)
+        This will change the form's services  
+        """
+
         self.active_form.gp = form.Form.import_service_from_json(data.get("gp", {}))
         self.active_form.dentist = form.Form.import_service_from_json(data.get("dentist", {}))
         self.active_form.optician = form.Form.import_service_from_json(data.get("optician", {}))
@@ -227,5 +238,13 @@ class App(Notebook):
         }
 
     @property
-    def active_form(self) -> form.Form:
-        return self.select()
+    def active_form(self) -> form.Form | None:
+        """
+        Gets the active form or None if none selected
+
+        :return: Form or None
+        """
+        if self.select():
+            return self.tab(self.select())
+        else:
+            return None
