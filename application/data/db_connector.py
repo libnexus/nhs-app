@@ -120,6 +120,9 @@ class DatabaseIntermediary(ABC):
         collection of results which match the given parameters
         """
 
+    
+    """vvv Ricardo vvv"""
+
     @abstractmethod
     def add_service(self, service: sv.Service):
         """
@@ -175,3 +178,4 @@ class DatabaseIntermediary(ABC):
 
         """
     
+    """^^^ Ricardo ^^^"""

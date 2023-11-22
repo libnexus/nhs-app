@@ -107,3 +107,50 @@ class DBConnector(DatabaseIntermediary):
             WHERE longitude < {longitude + distance} AND latitude < {latitude} + 1 
             AND {longitude - 1} < longitude AND {latitude}"""
         )
+
+    """vvv Ricardo vvv"""
+
+    def add_service(self, service: sv.Service):
+        
+        if not self.is_connected:
+            return []
+
+        cur = self.connection.cursor()
+        cur.execute("""INSERT INTO Service (postcode, name, address_line_1, address_line_2, email, telephone, service_type) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')""" 
+        %(service.postcode.postcode, service.name, service.address_line_1, service.address_line_2, service.email, service.telephone, service.service_type)) 
+        
+
+    def add_postcode(self, postcode: pc.Postcode) -> DatabaseIntermediary.POSTCODE_EXIST | None:
+        
+        if not self.is_connected:
+            return POSTCODE_EXIST
+        
+        cur = self.connection.cursor() 
+        cur.execute("""INSERT INTO Postcode VALUES ('%s')"""
+        %(postcode.postcode))       
+        
+
+    def update_service(self, service: sv.Service, name: str, email: str, phonenumber: int) -> sv.Service:
+        
+        if not self.is_connected:
+            return POSTCODE_EXIST
+
+        cur = self.connection.cursor()
+        cur.execute("""UPDATE Service (postcode, name, address_line_1, address_line_2, email, telephone, service_type) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')""" 
+        %(service.postcode.postcode, service.name, service.address_line_1, service.address_line_2, service.email, service.telephone, service.service_type))
+
+    def del_postcode(self, postcode: pc.Postcode) -> DatabaseIntermediary.POSTCODE_NOT_EXIST | DatabaseIntermediary.FAILED_TO_DELETE | None:
+       
+        if not self.is_connected:
+            return POSTCODE_NOT_EXIST
+        
+        cur = self.connection.cursor() 
+        cur.execute("""DELETE FROM Postcode VALUES ('%s')"""%(postcode.postcode))
+
+    def del_service(self, service: sv.Service) -> DONT_KNOW_SERVICE | FAILED_TO_DELETE | None:
+        
+        if not self.is_connected:
+            return DONT_KNOW_SERVICE
+
+        cur = self.connection.cursor()
+        cur.execute("""DELETE FROM Service WHERE Serviceid ='%s'"""%Serviceid)
