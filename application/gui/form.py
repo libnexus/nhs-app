@@ -40,7 +40,7 @@ class Form(Frame, FormInformation):
 
     @property
     def postcode(self) -> pc.Postcode:
-        pass
+        return self._postcode
 
     def __init__(self, master, postcode: Postcode, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
@@ -76,7 +76,6 @@ class Form(Frame, FormInformation):
         """
         Converts a service to a json representation of the service
 
-        (replace inside the curly braces)
         """
         return {
             "postcode": service.postcode.postcode,
@@ -91,7 +90,7 @@ class Form(Frame, FormInformation):
     @staticmethod
     def import_service_from_json(service: dict) -> Service:
         """
-        Converts a jsonified service to a service object
+        Converts a json representation of a service to a service object
 
         """
         postcode = Postcode(service.get("postcode", ""))

@@ -7,6 +7,7 @@ import application.data.postcode as pc
 import application.data.service as sv
 import application.gui.service_listbox as service_listbox
 
+
 EMAIL_REGEX: regex.Pattern = ...
 TELEPHONE_REGEX: regex.Pattern = ...
 
