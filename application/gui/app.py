@@ -65,7 +65,7 @@ class App(Notebook):
         self._form_menu = form_menu
         self._help_menu = help_menu
 
-        self._form_data = self._current_form_data()
+        # self._form_data = self._current_form_data()
 
     def _save_dict_as_json(self, dictionary: dict, file_name: str) -> bool:
         """
@@ -230,6 +230,8 @@ class App(Notebook):
         pass
 
     def _current_form_data(self):
+        if not self.active_form:
+            return {}
         return {
             'gp': self.active_form.gp,
             'dentist': self.active_form.dentist,
