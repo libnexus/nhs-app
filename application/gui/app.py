@@ -24,8 +24,6 @@ class App(Notebook):
 
         self._operating_dir = abspath("/")
         self._file_path = None
-        # Add a list to store recent files
-        self.recent_files = deque(maxlen=5)
 
         # Menu
         # ref: https://pythonspot.com/tk-menubar/
@@ -65,7 +63,7 @@ class App(Notebook):
         self._form_menu = form_menu
         self._help_menu = help_menu
 
-        # self._form_data = self._current_form_data()
+        self._form_data = self._current_form_data()
 
     def _save_dict_as_json(self, dictionary: dict, file_name: str) -> bool:
         """
@@ -97,7 +95,7 @@ class App(Notebook):
 
         self._file_path = None
 
-        self._original_form_data = self._current_form_data()
+        self._form_data = self._current_form_data()
 
     def _file_open(self):
         file_path = filedialog.askopenfilename(defaultextension=".form", filetypes=[("Form files", "*.form")])
@@ -116,7 +114,7 @@ class App(Notebook):
 
         self._file_path = file_path
 
-        self._original_form_data = self._current_form_data()
+        self._form_data = self._current_form_data()
 
     def _file_open_recent(self, file_path):
         """
@@ -147,7 +145,7 @@ class App(Notebook):
 
         self._file_path = file_path
 
-        self._original_form_data = self._current_form_data()
+        self._form_data = self._current_form_data()
 
 
     def _file_save(self):
@@ -169,7 +167,7 @@ class App(Notebook):
             }
 
         self._save_dict_as_json(data, self._file_path)
-        self._original_form_data = self._current_form_data()
+        self._form_data = self._current_form_data()
 
     def _file_save_as(self):
         self._file_path = filedialog.asksaveasfilename(defaultextension=".form", filetypes=[("Form files", "*.form")])
@@ -184,7 +182,7 @@ class App(Notebook):
 
         self._save_dict_as_json(data, self._file_path)
 
-        self._original_form_data = self._current_form_data()
+        self._form_data = self._current_form_data()
 
     def _file_export(self):
         pass
@@ -201,7 +199,7 @@ class App(Notebook):
         # Reset file path
         self._file_path = None
 
-        self._original_form_data = self._current_form_data()
+        self._form_data = self._current_form_data()
 
     def _form_copy(self):
         copied_gp = copy.deepcopy(self.active_form.gp)
