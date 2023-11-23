@@ -145,7 +145,7 @@ class DBConnector(DatabaseIntermediary):
             return POSTCODE_NOT_EXIST
         
         cur = self.connection.cursor() 
-        cur.execute("""DELETE FROM Postcode VALUES ('%s')"""%(postcode.postcode))
+        cur.execute("""DELETE FROM Postcode WHERE postcodeid ='%s'"""%postcodeid)
 
     def del_service(self, service: sv.Service) -> DONT_KNOW_SERVICE | FAILED_TO_DELETE | None:
         
@@ -153,4 +153,4 @@ class DBConnector(DatabaseIntermediary):
             return DONT_KNOW_SERVICE
 
         cur = self.connection.cursor()
-        cur.execute("""DELETE FROM Service WHERE Serviceid ='%s'"""%Serviceid)
+        cur.execute("""DELETE FROM Service WHERE serviceid ='%s'"""%serviceid)
