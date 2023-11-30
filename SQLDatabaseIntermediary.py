@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import sqlite3
 from typing import Collection
 
@@ -20,7 +22,7 @@ class DBConnector(DatabaseIntermediary):
         """
         Ynyr
         """
-        self.connection = sqlite3.connect("dbtest.db")
+        self.connection = sqlite3.connect("database-files/postcode-service.db")
         return True
 
     def close_db(self) -> bool:
@@ -80,7 +82,7 @@ class DBConnector(DatabaseIntermediary):
             return DatabaseIntermediary.POSTCODE_NOT_EXIST
 
         cur = self.connection.cursor()
-        cur.execute("SELECT * FROM Postcode WHERE postcode = '%s'" % postcode)
+        cur.execute("SELECT * FROM postcode WHERE postcode = \"%s\"" % postcode)
         results = cur.fetchall()
 
         if not results:
@@ -91,11 +93,8 @@ class DBConnector(DatabaseIntermediary):
 
     def get_services(self,
                      service_type: str,
-                     longitude: float,
-                     latitude: float,
+                     postcode: pc.Postcode,
                      distance: float,
-                     distance_from_postcode: pc.Postcode | None = None,
-                     distance_from_coordinates: tuple[float, float] | None = None, max_number=0
                      ) -> DatabaseIntermediary.DONT_KNOW_SERVICE | Collection[sv.Service, ...]:
         if not self.is_connected:
             return []
@@ -103,58 +102,69 @@ class DBConnector(DatabaseIntermediary):
         cur = self.connection.cursor()
         cur.execute(
             f"""
-            SELECT * FROM Service 
-            WHERE longitude < {longitude + distance} AND latitude < {latitude} + 1 
-            AND {longitude - 1} < longitude AND {latitude}"""
+            SELECT postcode.postcode, name, addr1, addr2, email, telephone, type FROM service, postcode
+            WHERE service.postcode=postcode.postcode 
+            AND longitude < {postcode.longitude} + {distance} 
+            AND longitude > {postcode.longitude} - {distance} 
+            AND latitude < {postcode.latitude} + {distance} 
+            AND latitude > {postcode.latitude} - {distance}"""
         )
+        results = cur.fetchall()
+        services = []
+        for serv in results:
+            postcode, name, addr1, addr2, email, telephone, stype = serv
+            service = sv.Service(self.get_postcode(postcode), name, addr1, addr2, email, telephone, stype)
+            services.append(service)
+
+        return services
 
     """vvv Ricardo vvv"""
 
     def add_service(self, service: sv.Service):
-        
+
         if not self.is_connected:
             return []
 
         cur = self.connection.cursor()
-        cur.execute("""INSERT INTO Service (postcode, name, address_line_1, address_line_2, email, telephone, service_type) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')""" 
-        %(service.postcode.postcode, service.name, service.address_line_1, service.address_line_2, service.email, service.telephone, service.service_type)) 
-        
+        cur.execute(
+            """INSERT INTO service (`postcode`, `name`, `addr1`, `addr2`, `email`, `telephone`, `type`) VALUES (\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\")"""
+            % (service.postcode.postcode, service.name, service.address_line_1, service.address_line_2, service.email,
+               service.telephone, service.service_type))
 
     def add_postcode(self, postcode: pc.Postcode) -> DatabaseIntermediary.POSTCODE_EXIST | None:
-        
+
         if not self.is_connected:
-            return POSTCODE_EXIST
-        
-        cur = self.connection.cursor() 
-        cur.execute("""INSERT INTO Postcode VALUES ('%s')"""
-        %(postcode.postcode))       
-        
+            return DatabaseIntermediary.POSTCODE_EXIST
+
+        cur = self.connection.cursor()
+        cur.execute("""INSERT INTO postcode (`postcode`, `longitude`, `latitude`) VALUES (\"%s\", %s, %s)"""
+                    % (postcode.postcode, postcode.longitude, postcode.latitude))
 
     def update_service(self, service: sv.Service, name: str, email: str, phonenumber: int) -> sv.Service:
-        
+
         if not self.is_connected:
-            return POSTCODE_EXIST
+            return DatabaseIntermediary.POSTCODE_EXIST
 
         cur = self.connection.cursor()
-        cur.execute("""UPDATE Service (postcode, name, address_line_1, address_line_2, email, telephone, service_type) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')""" 
-        %(service.postcode.postcode, service.name, service.address_line_1, service.address_line_2, service.email, service.telephone, service.service_type))
+        cur.execute(
+            """UPDATE Service (postcode, name, address_line_1, address_line_2, email, telephone, service_type) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')"""
+            % (service.postcode.postcode, service.name, service.address_line_1, service.address_line_2, service.email,
+               service.telephone, service.service_type))
 
-    def del_postcode(self, postcode: pc.Postcode) -> DatabaseIntermediary.POSTCODE_NOT_EXIST | DatabaseIntermediary.FAILED_TO_DELETE | None:
-       
+    def del_postcode(self,
+                     postcode: pc.Postcode) -> DatabaseIntermediary.POSTCODE_NOT_EXIST | DatabaseIntermediary.FAILED_TO_DELETE | None:
+
         if not self.is_connected:
-            return POSTCODE_NOT_EXIST
-
-        postcode_id = self._postcode_id[postcode]
-        
-        cur = self.connection.cursor() 
-        cur.execute("""DELETE FROM Postcode WHERE postcodeid ='%s'"""%postcode_id)
-
-    def del_service(self, service: sv.Service) -> DONT_KNOW_SERVICE | FAILED_TO_DELETE | None:
-        
-        if not self.is_connected:
-            return DONT_KNOW_SERVICE
-
-        service_id = self._service_id[service]
+            return DatabaseIntermediary.POSTCODE_NOT_EXIST
 
         cur = self.connection.cursor()
-        cur.execute("""DELETE FROM Service WHERE serviceid ='%s'"""%service_id)
+        cur.execute("""DELETE FROM Postcode WHERE `postcode`.`postcode`=\"%s\"""" % postcode.postcode)
+
+    def del_service(self,
+                    service: sv.Service) -> DatabaseIntermediary.DONT_KNOW_SERVICE | DatabaseIntermediary.FAILED_TO_DELETE | None:
+
+        if not self.is_connected:
+            return DatabaseIntermediary.DONT_KNOW_SERVICE
+
+        cur = self.connection.cursor()
+        cur.execute("""DELETE FROM service WHERE name =\"%s\"""" % service.name)

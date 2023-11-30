@@ -7,7 +7,7 @@ class ServicePreview(Frame):
     def __init__(self, master, service: sv.Service, propagate_callback, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self._service_object = service
-        self._name = Label(self, text=service.name)
+        self._name = Label(self, text=service.name_truncated)
         self._email = Label(self, text=service.postcode.nice_postcode)
         self._name.grid(row=0, column=0)
         self._email.grid(row=1, column=0)

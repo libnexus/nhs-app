@@ -82,7 +82,7 @@ class Service:
         return self._postcode
 
     @property
-    def name(self) -> str:
+    def name_truncated(self) -> str:
         """
         The name of the service as it is to be addressed
         
@@ -92,6 +92,13 @@ class Service:
             return self._name[:20] + "..."
         else:
             return self._name
+
+    @property
+    def name(self):
+        """
+        The actual name
+        """
+        return self._name
 
     @property
     def address_line_1(self) -> str:

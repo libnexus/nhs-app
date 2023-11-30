@@ -6,10 +6,7 @@ import application.data.db_connector as dbc
 import application.data.postcode as pc
 import application.data.service as sv
 import application.gui.service_listbox as service_listbox
-
-
-EMAIL_REGEX: regex.Pattern = ...
-TELEPHONE_REGEX: regex.Pattern = ...
+from re import compile
 
 
 class ServiceInformationEntry(Toplevel):
@@ -35,7 +32,7 @@ class ServiceInformationEntry(Toplevel):
         self._postcode = postcode
         self._dbc = database_connector
         self._service_type = service_type
-        self._irc = info_return_callback
+        self._info_return_callback = info_return_callback
 
         # set up entry as a top level
 
@@ -127,7 +124,9 @@ class ServiceInformationEntry(Toplevel):
         """
 
         """
-        self.validate_input_fields()
+        if self.validate_input_fields():
+            self._info_return_callback(self._selected_service)
+            self.destroy()
 
     def validate_input_fields(self) -> Literal[False] | pc.Postcode:
         """
@@ -158,19 +157,7 @@ class ServiceInformationEntry(Toplevel):
 
         # validate email look
 
-        if not EMAIL_REGEX.fullmatch(self._email_entry.get()):
-            messagebox.showerror("Uh Oh",
-                                 ""
-                                 "")
-            return False
-
         # validate telephone number look
-
-        if not TELEPHONE_REGEX.fullmatch(self._email_entry.get()):
-            messagebox.showerror("Uh Oh",
-                                 ""
-                                 "")
-            return False
 
         return postcode_obj
 
@@ -196,7 +183,7 @@ class ServiceInformationEntry(Toplevel):
 
     def _button_return_service(self):
         service = self.get_selected_service()
-        service and self._irc(service)
+        service and self._info_return_callback(service)
 
     def get_services(self, amount=10) -> tuple[sv.Service, ...] | None:
         """

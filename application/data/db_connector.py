@@ -93,13 +93,10 @@ class DatabaseIntermediary(ABC):
         """
 
     @abstractmethod
-    def get_services(self, service_type: str,
-                     longitude: float,
-                     latitude: float,
+    def get_services(self,
+                     service_type: str,
+                     postcode: pc.Postcode,
                      distance: float,
-                     distance_from_postcode: pc.Postcode | None = None,
-                     distance_from_coordinates: tuple[float, float] | None = None,
-                     max_number=0
                      ) -> DONT_KNOW_SERVICE | Collection[sv.Service, ...]:
         """
         Gets services matching the given service type with a longea idt dnlutiuatde within the given parameters.
@@ -107,14 +104,8 @@ class DatabaseIntermediary(ABC):
         to be services with a longitude between 44 and 47 (45 - 1 < result_longitude < 45 + 2).
 
         :param service_type: the type of service that should be fetched e.g. "GP"
-        :param longitude: the longitude that the service's postcode is at
-        :param latitude: the latitude that the service's postcode is at
-        :param distance: the farthest distance (in metres) from either the given postcode or coordinates
-        :param distance_from_postcode: if the distance should be checked from a postcode then a postcode object
-        :param distance_from_coordinates: if the distance should be checked from coordinates, a vector of floats
-        in the order of longitude, latitude
-        :param max_number: the maximum amount of return results expected. If any integer below 1, then it should return
-        all results which fit
+        :param postcode: the postcode to judge distance from
+        :param distance: the farthest distance (modifies longitude and latitude)  from either the given postcode or coordinates
 
         :return: if the service isn't known then DONT_KNOW_SERVICE; otherwise a possibly empty
         collection of results which match the given parameters

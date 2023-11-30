@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import json
 import copy
-from collections import deque
+import json
+from json import loads
 from os.path import abspath
 from tkinter import Menu, Tk, messagebox
 from tkinter import filedialog
@@ -10,7 +10,16 @@ from tkinter.messagebox import showerror
 from tkinter.ttk import Notebook
 
 import JSONDatabaseIntermediary as jdbi
+import application.data.persistent_storage as pss
 import application.gui.form as form
+import application.util as util
+
+
+def truncate(string: str, places: int, suffix: str = "...") -> str:
+    if len(string) < places + len(suffix):
+        return string
+    else:
+        return string[:len(suffix)] + suffix
 
 
 class App(Notebook):
@@ -31,10 +40,15 @@ class App(Notebook):
         file_menu = Menu(self._menu, tearoff=0)
         file_menu.add_command(label="New", command=self._file_new)
         file_menu.add_command(label="Open", command=self._file_open)
-        # file_menu.add_command(label="Open recent", command=self._file_open_recent)
         # ref: https://coderslegacy.com/python/create-submenu-in-tkinter/
         recent_menu = Menu(self._menu, tearoff=0)
+
+        # TODO move repair config file to main
+        util.repair_config_file()
+
         file_menu.add_cascade(label="Open recent", menu=recent_menu)
+        for i, path in enumerate(pss.APP_CONFIG["FILE:RECENT"]):
+            recent_menu.add_command(label="%d. %s" % (i, truncate(path, 10)))
 
         file_menu.add_command(label="Save", command=self._file_save)
         file_menu.add_command(label="Save As", command=self._file_save_as)
@@ -42,6 +56,7 @@ class App(Notebook):
         file_menu.add_command(label="Import", command=self._file_import)
         file_menu.add_separator()
         # Added exit option in menu, not needed but nice addition
+
         file_menu.add_command(label="Exit", command=self.quit)
         self._menu.add_cascade(label="File", menu=file_menu)
         form_menu = Menu(self._menu, tearoff=0)
@@ -65,28 +80,16 @@ class App(Notebook):
 
         self._form_data = self._current_form_data()
 
-    def _save_dict_as_json(self, dictionary: dict, file_name: str) -> bool:
-        """
-        Exports a dictionary to a json file with the constraint that all objects in the dictionary
-        have to be serializable (i.e. dictionary, list, string, int, boolean or None)
-
-        :param dictionary: the dictionary to be exported to a file
-        :param file_name: the file to save the json as
-        """
-
-        with open(self._operating_dir + file_name, "w+") as file:
-            file.write(...)
-
     def _file_new(self):
         current_form_data = self._current_form_data()
 
         if current_form_data != self._form_data:
-            response = messagebox.askyesnocancel("Unsaved Changes", "Do you want to save changes before creating a new form?")
-
+            response = messagebox.askyesnocancel("Unsaved Changes",
+                                                 "Do you want to save changes before creating a new form?")
             if response is None:
                 return
-            elif response:
-                self._file_save()
+
+            self._file_save()
 
         self.active_form.gp = None
         self.active_form.dentist = None
@@ -104,12 +107,14 @@ class App(Notebook):
 
         if file_path:
             with open(file_path, "r") as file:
-                data = json.load(file)
+                data = loads(file.read())
+        else:
+            return
 
-        self.active_form.gp = form.Form.import_service_from_json(data.get("gp", {}))
-        self.active_form.dentist = form.Form.import_service_from_json(data.get("dentist", {}))
-        self.active_form.optician = form.Form.import_service_from_json(data.get("optician", {}))
-        schools_data = data.get("schools", [])
+        self.active_form.gp = form.Form.import_service_from_json(data["gp"])
+        self.active_form.dentist = form.Form.import_service_from_json(data["dentist"])
+        self.active_form.optician = form.Form.import_service_from_json(data["optician"])
+        schools_data = data["schools"]
         self.active_form.schools = [form.Form.import_service_from_json(school) for school in schools_data]
 
         self._file_path = file_path
@@ -147,7 +152,6 @@ class App(Notebook):
 
         self._form_data = self._current_form_data()
 
-
     def _file_save(self):
         """
             changed json files to .form files as the extension is more explanatory
@@ -156,7 +160,8 @@ class App(Notebook):
         """
 
         if self._file_path is None:
-            self._file_path = filedialog.asksaveasfilename(defaultextension=".form", filetypes=[("Form files", "*.form")])
+            self._file_path = filedialog.asksaveasfilename(defaultextension=".form",
+                                                           filetypes=[("Form files", "*.form")])
         data = {}
         if self._file_path:
             data = {
@@ -230,6 +235,7 @@ class App(Notebook):
     def _current_form_data(self):
         if not self.active_form:
             return {}
+
         return {
             'gp': self.active_form.gp,
             'dentist': self.active_form.dentist,

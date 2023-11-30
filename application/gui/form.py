@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from tkinter import Frame
+from tkinter import Frame, LabelFrame, Button, Label
 from typing import Collection
 
 from application.data import postcode as pc, service as sv

@@ -6,7 +6,7 @@ even if it is slow for the time being - Shaun
 from __future__ import annotations
 
 from json import loads
-from typing import Collection
+from typing import Collection, Generator
 from functools import cache
 
 from application.data import service as sv, postcode as pc
@@ -46,6 +46,15 @@ class JSONDatabaseIntermediary(DatabaseIntermediary):
     def __init__(self):
         self._postcodes: dict = {}
         self._services: dict = {}
+
+    def postcodes(self) -> Generator[pc.Postcode]:
+        for postcode, fields in self._postcodes.items():
+            yield objectify_postcode(postcode, fields)
+
+    def services(self) -> Generator[sv.Service]:
+        for postcode, services in self._services.items():
+            for service in services:
+                yield objectify_service(service, self.get_postcode(postcode))
 
     def init_db(self) -> bool:
         with open("database-files/ll-postcodes.json") as file:
