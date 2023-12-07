@@ -63,7 +63,8 @@ class Form(Frame, FormInformation):
             self._optician = optician
         if schools:
             self._schools = schools
-
+        if pss.APP_CONFIG["THEME:STANDARD"]:
+            self.config(background="white")
     def __init__(self, master, postcode: Postcode, *args, **kwargs):
         super(Frame).__init__(master, *args, **kwargs)
         super(FormInformation).__init__()

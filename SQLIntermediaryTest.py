@@ -4,7 +4,6 @@ from SQLDatabaseIntermediary import DBConnector
 from application.data.postcode import Postcode
 from application.data.service import Service
 
-
 connector: DBConnector | None = None
 
 
@@ -30,14 +29,14 @@ class IntermediaryTest(unittest.TestCase):
         """
         finds a specific postcode using postcode name, longitude, and latitude
         """
-        self.assertIs(connector.get_postcode("LL573PL"), Postcode("LL573PL", -4.12861, 53.22430799999999))
+        self.assertIs(connector.get_postcode("LL573PL"), Postcode("LL573PL", -4.0530610000000005, 53.177014))
 
     def test_get_services(self):
         """
-        finds a service using it's service type (such as school), postcode,
+        finds all services of a type using it's service type (such as school), postcode,
         and distance (distance being the farthest distance from the given postcode or coordinates)
         """
-        self.assertIs(connector.get_services("SCHOOL", "LL573PL", 1))
+        self.assertIs(connector.get_services("SCHOOL", connector.get_postcode("LL573PL"), 1), ...)
 
     def test_add_postcode(self):
         """
@@ -53,8 +52,8 @@ class IntermediaryTest(unittest.TestCase):
         addressline 2, their email, the telephone number, and the type of service
         """
         self.assertEquals(connector.get_service_by_name("Ysgol Abercaseg (Babanod)"), DBConnector.DONT_KNOW_SERVICE)
-        connector.add_service(Service("LL573PL", "name", "address line 1",
-                                      "address line 2", "email", 00000000, "GP"))
+        connector.add_service(Service(connector.get_postcode("LL573PL"), "name", "address line 1",
+                                      "address line 2", "email", "00000000", "GP"))
 
     def test_update_service(self):
         service = connector.get_service_by_name("Ysgol Abercaseg (Babanod)")
@@ -67,10 +66,9 @@ class IntermediaryTest(unittest.TestCase):
         self.assertIsInstance(connector.get_postcode("LL573PL"), Postcode)
 
     def test_del_service(self):
-        self.assertEquals(DBConnector.get_service_by_name("Ysgol Abercaseg (Babanod)"), DBConnector.DONT_KNOW_SERVICE)
-        connector.del_service(DBConnector.get_service_by_name("Ysgol Abercaseg (Babanod)"))
-        self.assertIsInstance(connector.get_services("SCHOOL", "LL573PL", 100_000), Service)
-
+        self.assertEquals(connector.get_service_by_name("Ysgol Abercaseg (Babanod)"), DBConnector.DONT_KNOW_SERVICE)
+        connector.del_service(connector.get_service_by_name("Ysgol Abercaseg (Babanod)"))
+        self.assertIsInstance(connector.get_services("SCHOOL", connector.get_postcode("LL573PL"), 100_000), Service)
 
 
 if __name__ == "__main__":

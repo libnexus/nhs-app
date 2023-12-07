@@ -82,7 +82,7 @@ class DBConnector(DatabaseIntermediary):
             return DatabaseIntermediary.POSTCODE_NOT_EXIST
 
         cur = self.connection.cursor()
-        cur.execute("SELECT * FROM postcode WHERE postcode = \"%s\"" % postcode)
+        cur.execute("SELECT * FROM `postcode` WHERE postcode=\"%s\"" % postcode)
         results = cur.fetchall()
 
         if not results:

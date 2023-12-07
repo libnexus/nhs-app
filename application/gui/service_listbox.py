@@ -1,20 +1,30 @@
 from tkinter import LabelFrame, Label, Canvas, Scrollbar, Frame, BOTH, LEFT, RIGHT, Y, NW, Event
 
 import application.data.service as sv
-
+import application.data.persistent_storage as pss
 
 class ServicePreview(Frame):
     def __init__(self, master, service: sv.Service, propagate_callback, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self._service_object = service
         self._name = Label(self, text=service.name_truncated)
+        if pss.APP_CONFIG["THEME:STANDARD"]:
+            self._name.config(background="black")
+            """Black is chosen because anything that is to do with text should be the colour black as it is
+            simplistic as well as being visible on all backgrounds"""
         self._email = Label(self, text=service.postcode.nice_postcode)
+        if pss.APP_CONFIG["THEME:STANDARD"]:
+            self._email.config(background="black")
+            """Black is chosen because anything that is to do with text should be the colour black as it is
+               simplistic as well as being visible on all backgrounds"""
         self._name.grid(row=0, column=0)
         self._email.grid(row=1, column=0)
         self._propagate_callback = propagate_callback
         self._name.bind("<Double-Button-1>", self.double_click)
         self._email.bind("<Double-Button-1>", self.double_click)
-
+        if pss.APP_CONFIG["THEME:STANDARD"]:
+            self.config(background="white")
+            """The Service preview frame will be white as it is professional and simplistic"""
     def double_click(self, event: Event):
         self._propagate_callback(self._service_object)
 
@@ -33,7 +43,6 @@ class ServiceListbox(LabelFrame):
         if pss.APP_CONFIG["THEME:STANDARD"]:
             self.config(background="white")
             """White is chosen as it is professional and simplistic as well as linking to the nhs"""
-
 
     def clear_services(self):
         for preview in self._shown_services:
@@ -57,6 +66,9 @@ class ScrollView(Frame):
         super().__init__(master, *args, **kwargs)
         self._canvas = Canvas(self, *args, **kwargs)
         self._scrollbar = Scrollbar(self, orient="vertical", command=self._canvas.yview)
+        if pss.APP_CONFIG["THEME:STANDARD"]:
+            self._scrollbar.config(background="dark blue")
+            """The scroll bar will be dark blue because it is the main primary colour that we will use for the app"""
         self._scrollable_frame = Frame(self._canvas)
         self._scrollable_frame.bind("<Configure>",
                                     lambda e: self._canvas.configure(scrollregion=self._canvas.bbox("all")))

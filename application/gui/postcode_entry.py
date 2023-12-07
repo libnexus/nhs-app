@@ -4,6 +4,7 @@ from tkinter import messagebox, Toplevel, Entry, LabelFrame, StringVar, Button, 
 from typing import Callable
 
 import application.data.db_connector as dbc
+import application.data.persistent_storage as pss
 import application.data.postcode as pc
 
 
@@ -29,6 +30,9 @@ class PostcodeEntry(Toplevel):
                  database_connector: dbc.DatabaseIntermediary,
                  callback: Callable[[pc.Postcode], None]
                  ):
+        """
+           Entry widget for the user to enter the Postcode, with a callback to return the Postcode
+        """
         super().__init__(master)
         # information entry
         self._postcode = pc.Postcode
@@ -38,23 +42,32 @@ class PostcodeEntry(Toplevel):
 
         self.resizable(False, False)
         self.title("Postcode Entry")
-
+        if pss.APP_CONFIG["THEME:STANDARD"]:
+            self.config(background="light blue")
         # Postcode entry box
 
         self._postcode_entry_frame = LabelFrame(self, text="Postcode")
+        if pss.APP_CONFIG["THEME:STANDARD"]:
+            self._postcode_entry_frame.config(background="white")
         self._postcode_field = StringVar()
-        self._postcode_entry = ShadowEntryWidget(self._postcode_entry_frame,"e.g. ...", width=12, textvariable=self._postcode_field,
-                                     font='Arial 20')
+        self._postcode_entry = ShadowEntryWidget(self._postcode_entry_frame, "e.g. ...", width=12,
+                                                 textvariable=self._postcode_field, font='Arial 20')
         self._postcode_entry.grid(row=0, column=0, padx=8, pady=4)
         self._postcode_entry_frame.pack()
 
         # submit button
 
         self._submit_button = Button(self._postcode_entry_frame, text="Submit", command=self._submit_postcode)
+        if pss.APP_CONFIG["THEME:STANDARD"]:
+            self._submit_button.config(background="light blue")
         self._submit_button.grid(row=1, column=0, pady=4)
         self._submit_button.focus_set()
 
     def _submit_postcode(self):
+        """
+            Function to grab the entered Postcode and use the get_postcode method in the database connector class to
+            return a postcode object
+        """
         postcode = self._postcode_field.get().replace(" ", "").upper()
 
         if self._dbc.get_postcode(postcode) == 0:
