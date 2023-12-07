@@ -1,13 +1,26 @@
 from __future__ import annotations
 
-from tkinter import Tk, BOTH, YES
+from tkinter import Tk, BOTH, YES, Entry, Frame, FIRST, END
 
 import SQLDatabaseIntermediary as sqldbi
 import application.gui.app as app
 import application.gui.form as form
 import application.util as util
 from application.data.persistent_storage import APP_CONFIG
+import application.gui.postcode_entry as pce
 
+
+
+
+root = Tk()
+connector = sqldbi.DBConnector()
+connector.init_db()
+pce.PostcodeEntry(root, connector, lambda p: print("postcode", p))
+a = app.App(root)
+a.pack()
+root.mainloop()
+
+"""
 util.repair_config_file()
 APP_CONFIG.save()
 
@@ -17,9 +30,8 @@ connector = sqldbi.DBConnector()
 connector.init_db()
 LL57_1US = connector.get_services("GP", connector.get_postcode("LL571US"), 1)
 
-root = Tk()
-
 main = app.App(root)
 main_form = form.Form(main, LL57_1US)
 main.add(main_form)
 root.mainloop()
+"""

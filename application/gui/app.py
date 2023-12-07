@@ -10,6 +10,7 @@ from tkinter.messagebox import showerror
 from tkinter.ttk import Notebook
 
 import JSONDatabaseIntermediary as jdbi
+import SQLDatabaseIntermediary as sqldbi
 import application.data.persistent_storage as pss
 import application.gui.form as form
 import application.util as util
@@ -26,7 +27,7 @@ class App(Notebook):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
 
-        self._jdbi = jdbi.JSONDatabaseIntermediary()
+        self._jdbi = sqldbi.DBConnector()
         if not self._jdbi.init_db():
             showerror("Uh Oh", "The database had trouble connecting. Try restarting the program.")
             raise SystemExit
@@ -91,16 +92,13 @@ class App(Notebook):
 
             self._file_save()
 
-        self.active_form.gp = None
-        self.active_form.dentist = None
-        self.active_form.optician = None
-        self.active_form.schools = []
+        self.add(form.Form(self, ...), text=...)
 
         self._file_path = None
 
         self._form_data = self._current_form_data()
 
-    def _file_open(self):
+    def _file_open(self):   
         file_path = filedialog.askopenfilename(defaultextension=".form", filetypes=[("Form files", "*.form")])
 
         data = {}

@@ -8,6 +8,8 @@ from application.data.form_container import FormInformation
 from application.data.postcode import Postcode
 from application.data.service import Service
 
+import application.data.persistent_storage as pss
+
 
 def _service_info(service: Service):
     information = "    Name: %s\n" % service.name
@@ -65,7 +67,8 @@ class Form(Frame, FormInformation):
             self._schools = schools
 
     def __init__(self, master, postcode: Postcode, *args, **kwargs):
-        super().__init__(master, *args, **kwargs)
+        super(Frame).__init__(master, *args, **kwargs)
+        super(FormInformation).__init__()
 
         self._postcode: Postcode = postcode
         self._gp: Service | None = None
@@ -73,8 +76,9 @@ class Form(Frame, FormInformation):
         self._optician: Service | None = None
         self._schools: list[Service, ...] = []
 
-        self._boof = Frame(self, width=400, height=400)
-        self._boof.pack()
+
+
+
 
     def _compile_information_to_string(self) -> str:
         """

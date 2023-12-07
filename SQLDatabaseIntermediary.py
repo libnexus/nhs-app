@@ -168,3 +168,16 @@ class DBConnector(DatabaseIntermediary):
 
         cur = self.connection.cursor()
         cur.execute("""DELETE FROM service WHERE name =\"%s\"""" % service.name)
+
+    def get_service_by_name(self, name: str) -> sv.Service:
+        if not self.is_connected:
+            return DatabaseIntermediary.DONT_KNOW_SERVICE
+
+        cur = self.connection.cursor()
+        cur.execute("""SELECT * FROM `service` WHERE `name`=\"%s\"""" % name)
+        results = cur.fetchall()
+        if not results:
+            return DatabaseIntermediary.DONT_KNOW_SERVICE
+        else:
+            postcode, name, addr1, addr2, email, telephone, stype = results[0]
+            return sv.Service(sv.Service(self.get_postcode(postcode), name, addr1, addr2, email, telephone, stype))

@@ -170,3 +170,12 @@ class DatabaseIntermediary(ABC):
         """
     
     """^^^ Ricardo ^^^"""
+
+    @abstractmethod
+    def get_service_by_name(self, name: str) -> sv.Service:
+        """
+        gets an existing service by it's name, if there is no service with a suitable name stored then returns an error
+
+        :param name: the name of the service to get
+        :return: the service object or an error if there's no name
+        """

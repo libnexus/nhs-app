@@ -11,7 +11,8 @@ def repair_config_file():
             "`telephone` VARCHAR(15),`type` VARCHAR(20));",
             "CREATE TABLE IF NOT EXISTS `postcode` ( `postcode` VARCHAR(12) PRIMARY KEY, "
             "`longitude` FLOAT, `latitude` FLOAT );"]),
-        "FILE:RECENT": lambda: APP_CONFIG.__setitem__("FILE:RECENT", [])
+        "FILE:RECENT": lambda: APP_CONFIG.__setitem__("FILE:RECENT", []),
+        "THEME:STANDARD": lambda: False
     }
 
     for key, propagator in CONFIG_ITEMS.items():
