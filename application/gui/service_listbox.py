@@ -30,6 +30,10 @@ class ServiceListbox(LabelFrame):
         self._display_frame.pack(fill=BOTH, expand=0)
         self._propagate_callback = propagate_callback
         self._shown_services: list[ServicePreview, ...] = []
+        if pss.APP_CONFIG["THEME:STANDARD"]:
+            self.config(background="white")
+            """White is chosen as it is professional and simplistic as well as linking to the nhs"""
+
 
     def clear_services(self):
         for preview in self._shown_services:
@@ -60,7 +64,6 @@ class ScrollView(Frame):
         self._canvas.configure(yscrollcommand=self._scrollbar.set)
         self._canvas.pack(side=LEFT, expand=False)
         self._scrollbar.pack(side=RIGHT, fill=Y)
-
     @property
     def scrollable_frame(self) -> Frame:
         return self._scrollable_frame

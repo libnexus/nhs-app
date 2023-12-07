@@ -140,16 +140,24 @@ class DBConnector(DatabaseIntermediary):
         cur.execute("""INSERT INTO postcode (`postcode`, `longitude`, `latitude`) VALUES (\"%s\", %s, %s)"""
                     % (postcode.postcode, postcode.longitude, postcode.latitude))
 
-    def update_service(self, service: sv.Service, name: str, email: str, phonenumber: int) -> sv.Service:
+    def update_service(self, service: sv.Service, name: str | None = None, email: str | None = None, phonenumber: int | None = None) -> sv.Service:
 
         if not self.is_connected:
             return DatabaseIntermediary.POSTCODE_EXIST
 
         cur = self.connection.cursor()
-        cur.execute(
-            """UPDATE Service (postcode, name, address_line_1, address_line_2, email, telephone, service_type) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')"""
-            % (service.postcode.postcode, service.name, service.address_line_1, service.address_line_2, service.email,
-               service.telephone, service.service_type))
+        names, query = [], []
+        if name:
+            names.append("`name`")
+            query.append(name)
+        if email:
+            names.append("`email`")
+            query.append(email)
+        if phonenumber:
+            names.append("`telephone`")
+            query.append(phonenumber)
+        query = "UPDATE `service` SET %s WHERE `name`=\"%s\"" % (", ".join(["`%s`=\"%s\"" % (k, v) for k, v in zip(names, query)]), service.name)
+        cur.execute(query)
 
     def del_postcode(self,
                      postcode: pc.Postcode) -> DatabaseIntermediary.POSTCODE_NOT_EXIST | DatabaseIntermediary.FAILED_TO_DELETE | None:

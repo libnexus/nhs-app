@@ -1,15 +1,13 @@
 from __future__ import annotations
 
-from tkinter import Frame, LabelFrame, Button, Label
+from tkinter import Frame
 from typing import Collection
 
 from application.data import postcode as pc, service as sv
 from application.data.form_container import FormInformation
 from application.data.postcode import Postcode
 from application.data.service import Service
-
 import application.data.persistent_storage as pss
-
 
 def _service_info(service: Service):
     information = "    Name: %s\n" % service.name
@@ -75,10 +73,6 @@ class Form(Frame, FormInformation):
         self._dentist: Service | None = None
         self._optician: Service | None = None
         self._schools: list[Service, ...] = []
-
-
-
-
 
     def _compile_information_to_string(self) -> str:
         """

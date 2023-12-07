@@ -8,6 +8,7 @@ import application.gui.form as form
 import application.util as util
 from application.data.persistent_storage import APP_CONFIG
 import application.gui.postcode_entry as pce
+import application.gui.service_info_entry
 
 
 
