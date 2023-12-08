@@ -61,7 +61,8 @@ class PostcodeEntry(Toplevel):
         if pss.APP_CONFIG["THEME:STANDARD"]:
             self._submit_button.config(background="light blue")
         self._submit_button.grid(row=1, column=0, pady=4)
-        self._submit_button.focus_set()
+
+        self.bind("<Return>", lambda e: self._submit_postcode())
 
     def _submit_postcode(self):
         """
@@ -78,6 +79,9 @@ class PostcodeEntry(Toplevel):
             )
             if not retry:
                 self.destroy()
+
+            self.focus_force()
+            self._postcode_entry.focus_force()
         else:
             self._callback(self._dbc.get_postcode(postcode))
             self.destroy()

@@ -5,9 +5,11 @@ from typing import Collection
 
 from application.data import postcode as pc, service as sv
 from application.data.db_connector import DatabaseIntermediary
+import sys
+from os.path import abspath, join
 
 
-class DBConnector(DatabaseIntermediary):
+class SQLDatabaseIntermediary(DatabaseIntermediary):
     """
     Class created by Ynyr with methods written by various members
     """
@@ -19,9 +21,9 @@ class DBConnector(DatabaseIntermediary):
         self.connection: sqlite3.Connection | None = None
 
     def init_db(self) -> bool:
-        """
-        Ynyr
-        """
+        # if this is being run on a machine and not in the executable, comment out the below line and replace it with
+        # the one that follows it, vice-versa
+        #self.connection = sqlite3.connect(abspath(join(sys._MEIPASS, "postcode-service.db")))
         self.connection = sqlite3.connect("database-files/postcode-service.db")
         return True
 
@@ -102,8 +104,9 @@ class DBConnector(DatabaseIntermediary):
         cur = self.connection.cursor()
         cur.execute(
             f"""
-            SELECT postcode.postcode, name, addr1, addr2, email, telephone, type FROM service, postcode
-            WHERE service.postcode=postcode.postcode 
+            SELECT postcode.postcode, name, addr1, addr2, email, telephone, type 
+            FROM service, postcode
+            WHERE service.postcode=postcode.postcode AND service.type="{service_type}"
             AND longitude < {postcode.longitude} + {distance} 
             AND longitude > {postcode.longitude} - {distance} 
             AND latitude < {postcode.latitude} + {distance} 
@@ -140,7 +143,8 @@ class DBConnector(DatabaseIntermediary):
         cur.execute("""INSERT INTO postcode (`postcode`, `longitude`, `latitude`) VALUES (\"%s\", %s, %s)"""
                     % (postcode.postcode, postcode.longitude, postcode.latitude))
 
-    def update_service(self, service: sv.Service, name: str | None = None, email: str | None = None, phonenumber: int | None = None) -> sv.Service:
+    def update_service(self, service: sv.Service, name: str | None = None, email: str | None = None,
+                       phonenumber: int | None = None) -> sv.Service:
 
         if not self.is_connected:
             return DatabaseIntermediary.POSTCODE_EXIST
@@ -156,7 +160,8 @@ class DBConnector(DatabaseIntermediary):
         if phonenumber:
             names.append("`telephone`")
             query.append(phonenumber)
-        query = "UPDATE `service` SET %s WHERE `name`=\"%s\"" % (", ".join(["`%s`=\"%s\"" % (k, v) for k, v in zip(names, query)]), service.name)
+        query = "UPDATE `service` SET %s WHERE `name`=\"%s\"" % (
+            ", ".join(["`%s`=\"%s\"" % (k, v) for k, v in zip(names, query)]), service.name)
         cur.execute(query)
 
     def del_postcode(self,

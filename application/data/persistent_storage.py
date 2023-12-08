@@ -17,3 +17,5 @@ class PersistentStorage(dict):
 
 
 APP_CONFIG = PersistentStorage("nhs-app.conf")
+APP_CONFIG["THEME:STANDARD"] = False
+APP_CONFIG["FILE:RECENT"] = []

@@ -161,7 +161,7 @@ class ServiceInformationEntry(Toplevel):
         """
         return self._selected_service
 
-    def propagate_entry_fields(self, service: sv.Service):
+    def propagate_entry_fields(self, service: sv.Service, _widget):
         self._name_field.set(service.name)
         self._postcode_field.set(service.postcode.nice_postcode)
         self._email_field.set(service.email)
@@ -257,8 +257,7 @@ class ServiceInformationEntry(Toplevel):
             if not self._dbc.command_able:
                 messagebox.showerror("Uh Oh", "The program was unable to look for services")
                 return
-            results = self._dbc.get_services(self._service_type, self._postcode.longitude, self._postcode.latitude,
-                                             distance=search_params * 1609, distance_from_postcode=self._postcode,
-                                             max_number=amount)
+            results = self._dbc.get_services(self._service_type, self._postcode,
+                                             1)
             search_params += 1
         return tuple(results)

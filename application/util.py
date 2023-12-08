@@ -19,11 +19,6 @@ def repair_config_file():
         if key not in APP_CONFIG:
             propagator()
 
-
-postcodes: dict = loads(open("database-files/ll-postcodes.json", "r").read())
-services: dict = loads(open("database-files/services-info.json", "r").read())
-
-
 def generate_db_insertions() -> list[str, ...]:
     import JSONDatabaseIntermediary as jdbi
     statements = []
@@ -44,3 +39,4 @@ def generate_db_insertions() -> list[str, ...]:
             ))
 
     return statements
+

@@ -9,7 +9,6 @@ from tkinter import filedialog
 from tkinter.messagebox import showerror
 from tkinter.ttk import Notebook
 
-import JSONDatabaseIntermediary as jdbi
 import SQLDatabaseIntermediary as sqldbi
 import application.data.persistent_storage as pss
 import application.gui.form as form
@@ -27,7 +26,7 @@ class App(Notebook):
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
 
-        self._jdbi = sqldbi.DBConnector()
+        self._jdbi = sqldbi.SQLDatabaseIntermediary()
         if not self._jdbi.init_db():
             showerror("Uh Oh", "The database had trouble connecting. Try restarting the program.")
             raise SystemExit

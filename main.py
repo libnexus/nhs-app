@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from tkinter import Tk, BOTH, YES, Entry, Frame, FIRST, END
+from tkinter import Tk, BOTH, YES, Entry, Frame, FIRST, END, messagebox
 
 import SQLDatabaseIntermediary as sqldbi
 import application.gui.app as app
@@ -11,28 +11,30 @@ import application.gui.postcode_entry as pce
 import application.gui.service_info_entry
 
 
+def __main__():
+    root = Tk()
+    connector = sqldbi.SQLDatabaseIntermediary()
+    root.lower()
+    if not connector.init_db():
+        messagebox.showerror("Uh Oh", "Failed to connect to database.. Please try opening again.")
+        return
+
+    _found = False
+
+    def __found_postcode__(postcode):
+        nonlocal _found
+        _found = True
+        main_form = form.Form(root, postcode, connector)
+        main_form.pack()
+
+    def __bad_leave__(e):
+        if not _found:
+            raise SystemExit
+
+    _pce = pce.PostcodeEntry(root, connector, __found_postcode__)
+    _pce.bind("<Destroy>", __bad_leave__)
+    root.mainloop()
 
 
-root = Tk()
-connector = sqldbi.DBConnector()
-connector.init_db()
-pce.PostcodeEntry(root, connector, lambda p: print("postcode", p))
-a = app.App(root)
-a.pack()
-root.mainloop()
-
-"""
-util.repair_config_file()
-APP_CONFIG.save()
-
-# TODO reference https://konstantin.blog/2010/pickle-vs-json-which-is-faster/
-
-connector = sqldbi.DBConnector()
-connector.init_db()
-LL57_1US = connector.get_services("GP", connector.get_postcode("LL571US"), 1)
-
-main = app.App(root)
-main_form = form.Form(main, LL57_1US)
-main.add(main_form)
-root.mainloop()
-"""
+if __name__ == "__main__":
+    __main__()

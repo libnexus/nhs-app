@@ -3,6 +3,7 @@ from tkinter import LabelFrame, Label, Canvas, Scrollbar, Frame, BOTH, LEFT, RIG
 import application.data.service as sv
 import application.data.persistent_storage as pss
 
+
 class ServicePreview(Frame):
     def __init__(self, master, service: sv.Service, propagate_callback, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
@@ -25,8 +26,9 @@ class ServicePreview(Frame):
         if pss.APP_CONFIG["THEME:STANDARD"]:
             self.config(background="white")
             """The Service preview frame will be white as it is professional and simplistic"""
+
     def double_click(self, event: Event):
-        self._propagate_callback(self._service_object)
+        self._propagate_callback(self._service_object, self)
 
 
 class ServiceListbox(LabelFrame):
@@ -76,6 +78,7 @@ class ScrollView(Frame):
         self._canvas.configure(yscrollcommand=self._scrollbar.set)
         self._canvas.pack(side=LEFT, expand=False)
         self._scrollbar.pack(side=RIGHT, fill=Y)
+
     @property
     def scrollable_frame(self) -> Frame:
         return self._scrollable_frame
