@@ -174,7 +174,8 @@ class SQLDatabaseIntermediary(DatabaseIntermediary):
             return DatabaseIntermediary.POSTCODE_NOT_EXIST
 
         cur = self.connection.cursor()
-        cur.execute("""DELETE FROM Postcode WHERE `postcode`.`postcode`=\"%s\"""" % postcode.postcode)
+        cur.execute("""DELETE FROM postcode WHERE `postcode`.`postcode`=\"%s\"""" % postcode.postcode)
+        self.connection.commit()
 
     def del_service(self,
                     service: sv.Service) -> DatabaseIntermediary.DONT_KNOW_SERVICE | DatabaseIntermediary.FAILED_TO_DELETE | None:
