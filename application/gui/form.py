@@ -97,14 +97,14 @@ class Form(Frame, FormInformation):
 
         self._gp_select_frame = LabelFrame(self, text="Select GP")
         self._gp_submit_button = Button(self._gp_select_frame, text="Select",
-                                        command=self._select_service("GP", "_gp_select_frame", "_gp_submit_button"),
+                                        command=self._select_service("GP", "_gp_submit_button"),
                                         width=20)
         self._gp_submit_button.pack(padx=10, pady=10)
         self._gp_select_frame.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
 
         self._dentist_select_frame = LabelFrame(self, text="Select Dentist")
         self._dentist_submit_button = Button(self._dentist_select_frame, text="Select",
-                                             command=self._select_service("DENTIST", "_dentist_select_frame",
+                                             command=self._select_service("DENTIST",
                                                                           "_dentist_submit_button"),
                                              width=20)
         self._dentist_submit_button.pack(padx=10, pady=10)
@@ -112,7 +112,7 @@ class Form(Frame, FormInformation):
 
         self._optician_select_frame = LabelFrame(self, text="Select Optician")
         self._optician_submit_button = Button(self._optician_select_frame, text="Select",
-                                              command=self._select_service("OPTICIAN", "_optician_select_frame",
+                                              command=self._select_service("OPTICIAN",
                                                                            "_optician_submit_button"),
                                               width=20)
         self._optician_submit_button.pack(padx=10, pady=10)
@@ -145,13 +145,13 @@ class Form(Frame, FormInformation):
         text = ""
 
         if self._gp:
-            text += "\n" + _service_info(self._gp) + "\n"
+            text += "\nGP:\n" + _service_info(self._gp) + "\n"
 
         if self._optician:
-            text += "\n" + _service_info(self._optician) + "\n"
+            text += "\nOptician:\n" + _service_info(self._optician) + "\n"
 
         if self._dentist:
-            text += "\n" + _service_info(self._dentist) + "\n"
+            text += "\nDentist:\n" + _service_info(self._dentist) + "\n"
 
         if self.schools:
             text += "\nSchools:\n"
@@ -176,10 +176,10 @@ class Form(Frame, FormInformation):
 
         ServiceInformationEntry(self, self._postcode, "SCHOOL", self._database_intermediary, __add_school__)
 
-    def _select_service(self, service_type: str, service: str, button: str):
+    def _select_service(self, service_type: str, button: str):
         def __select_service__():
             def ___select_service___(_service: Service):
-                setattr(self, service, _service)
+                setattr(self, "_%s" % service_type.lower(), _service)
                 getattr(self, button).config(text=_service.name_truncated)
 
             ServiceInformationEntry(self, self._postcode, service_type, self._database_intermediary,
