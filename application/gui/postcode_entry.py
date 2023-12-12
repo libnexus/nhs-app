@@ -47,6 +47,8 @@ class PostcodeEntry(Toplevel):
         self._postcode_entry_frame = LabelFrame(self, text="Postcode")
         if pss.AppConfig.get_colour_theme("default"):
             self._postcode_entry_frame.config(background="white")
+        elif pss.AppConfig.get_colour_theme("dark"):
+            self._postcode_entry_frame.config(background="grey")
         self._postcode_field = StringVar()
         self._postcode_entry = ShadowEntryWidget(self._postcode_entry_frame, "e.g. ...", width=12,
                                                  textvariable=self._postcode_field, font='Arial 20')

@@ -11,11 +11,15 @@ class ServicePreview(Frame):
         self._name = Label(self, text=service.name_truncated)
         if pss.AppConfig.get_colour_theme("default"):
             self._name.config(background="black")
+        elif pss.AppConfig.get_colour_theme("dark"):
+            self._gp_submit_button.config(background="white")
             """Black is chosen because anything that is to do with text should be the colour black as it is
             simplistic as well as being visible on all backgrounds"""
         self._email = Label(self, text=service.postcode.nice_postcode)
         if pss.AppConfig.get_colour_theme("default"):
             self._email.config(background="black")
+        elif pss.AppConfig.get_colour_theme("dark"):
+            self._email.config(background="white")
             """Black is chosen because anything that is to do with text should be the colour black as it is
                simplistic as well as being visible on all backgrounds"""
         self._name.grid(row=0, column=0)
@@ -25,6 +29,8 @@ class ServicePreview(Frame):
         self._email.bind("<Double-Button-1>", self.double_click)
         if pss.AppConfig.get_colour_theme("default"):
             self.config(background="white")
+        elif pss.AppConfig.get_colour_theme("dark"):
+            self.config(background="grey")
             """The Service preview frame will be white as it is professional and simplistic"""
 
     def double_click(self, event: Event):
@@ -44,6 +50,8 @@ class ServiceListbox(LabelFrame):
         self._shown_services: list[ServicePreview, ...] = []
         if pss.AppConfig.get_colour_theme("default"):
             self.config(background="white")
+        elif pss.AppConfig.get_colour_theme("dark"):
+            self.config(background="grey")
             """White is chosen as it is professional and simplistic as well as linking to the nhs"""
 
     def clear_services(self):
