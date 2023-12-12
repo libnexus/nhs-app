@@ -77,8 +77,11 @@ class Form(Frame, FormInformation):
             self._optician = optician
         if schools:
             self._schools = schools
-        if pss.APP_CONFIG["THEME:STANDARD"]:
+
+        if pss.AppConfig.get_colour_theme("default"):
             self.config(background="white")
+        elif pss.AppConfig.get_colour_theme("dark"):
+            self.config(background="grey")
 
     def __init__(self, master, postcode: Postcode, database_intermediary: db.DatabaseIntermediary, *args, **kwargs):
         Frame.__init__(self, master, *args, **kwargs)
@@ -96,25 +99,43 @@ class Form(Frame, FormInformation):
         self.update()
 
         self._gp_select_frame = LabelFrame(self, text="Select GP")
-        self._gp_submit_button = Button(self._gp_select_frame, text="Select",
+        if pss.AppConfig.get_colour_theme("default"):
+            self._gp_select_frame.config(background="white")
+        elif pss.AppConfig.get_colour_theme("dark"):
+            self._gp_select_frame.config(background="grey")
+            self._gp_submit_button = Button(self._gp_select_frame, text="Select",
                                         command=self._select_service("GP", "_gp_submit_button"),
                                         width=20)
+        if pss.AppConfig.get_colour_theme("default"):
+            self._gp_submit_button.config(background="light blue")
         self._gp_submit_button.pack(padx=10, pady=10)
         self._gp_select_frame.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
 
         self._dentist_select_frame = LabelFrame(self, text="Select Dentist")
+        if pss.AppConfig.get_colour_theme("default"):
+            self._dentist_select_frame.config(background="white")
+        elif pss.AppConfig.get_colour_theme("dark"):
+            self._dentist_select_frame.config(background="grey")
         self._dentist_submit_button = Button(self._dentist_select_frame, text="Select",
                                              command=self._select_service("DENTIST",
                                                                           "_dentist_submit_button"),
                                              width=20)
+        if pss.AppConfig.get_colour_theme("default"):
+            self._dentist_submit_button.config(background="light blue")
         self._dentist_submit_button.pack(padx=10, pady=10)
         self._dentist_select_frame.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
 
         self._optician_select_frame = LabelFrame(self, text="Select Optician")
+        if pss.AppConfig.get_colour_theme("default"):
+            self._optician_select_frame.config(background="white")
+        elif pss.AppConfig.get_colour_theme("dark"):
+            self._optician_select_frame.config(background="grey")
         self._optician_submit_button = Button(self._optician_select_frame, text="Select",
                                               command=self._select_service("OPTICIAN",
                                                                            "_optician_submit_button"),
                                               width=20)
+        if pss.AppConfig.get_colour_theme("default"):
+            self._optician_submit_button.config(background="light blue")
         self._optician_submit_button.pack(padx=10, pady=10)
         self._optician_select_frame.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
 
@@ -123,15 +144,29 @@ class Form(Frame, FormInformation):
         def _schools_view():
             if self._school_view is None:
                 self._school_view_frame = LabelFrame(self, text="Selected Schools (Double click to remove)")
+                if pss.AppConfig.get_colour_theme("default"):
+                    self._school_view_frame.config(background="white")
+                elif pss.AppConfig.get_colour_theme("dark"):
+                    self._school_view_frame.config(background="grey")
                 self._school_view = ServiceListbox(self._school_view_frame, self._del_school, width=10)
+                if pss.AppConfig.get_colour_theme("default"):
+                    self._school_view.config(background="white")
+                elif pss.AppConfig.get_colour_theme("dark"):
+                    self._gp_submit_button.config(background="grey")
                 self._school_view.pack()
                 self._school_view_frame.grid(row=0, column=2, padx=10, pady=10, rowspan=2)
             self._add_school()
 
         self._add_school_frame = LabelFrame(self, text="Select School")
+        if pss.AppConfig.get_colour_theme("default"):
+            self._add_school_frame.config(background="white")
+        elif pss.AppConfig.get_colour_theme("dark"):
+            self._gp_submit_button.config(background="grey")
         self._add_school_button = Button(self._add_school_frame, text="Select",
                                          command=_schools_view,
                                          width=20)
+        if pss.AppConfig.get_colour_theme("default"):
+            self._add_school_frame.config(background="light blue")
         self._add_school_button.pack(padx=10, pady=10)
         self._add_school_frame.grid(row=1, column=1, sticky="nsew", padx=10, pady=10)
 

@@ -5,6 +5,7 @@ from typing import Collection
 
 from application.data import postcode as pc, service as sv
 from application.data.db_connector import DatabaseIntermediary
+import application.data.persistent_storage as pss
 import sys
 from os.path import abspath, join
 
@@ -23,8 +24,7 @@ class SQLDatabaseIntermediary(DatabaseIntermediary):
     def init_db(self) -> bool:
         # if this is being run on a machine and not in the executable, comment out the below line and replace it with
         # the one that follows it, vice-versa
-        #self.connection = sqlite3.connect(abspath(join(sys._MEIPASS, "postcode-service.db")))
-        self.connection = sqlite3.connect("database-files/postcode-service.db")
+        self.connection = sqlite3.connect(pss.safe_path("postcode-service.db"))
         return True
 
     def close_db(self) -> bool:
@@ -64,9 +64,9 @@ class SQLDatabaseIntermediary(DatabaseIntermediary):
         cur = self.connection.cursor()
 
         if outcode is not None:
-            cur.execute(f"SELECT * FROM Postcodes WHERE Postcode LIKE '{outcode}%' ")
+            cur.execute(f"SELECT * FROM `postcode` WHERE `postcode` LIKE '{outcode}%' ")
         else:
-            cur.execute("SELECT * FROM Postcodes")
+            cur.execute("SELECT * FROM `postcode`")
 
         results = cur.fetchall()
         Postcodes = []
@@ -133,6 +133,7 @@ class SQLDatabaseIntermediary(DatabaseIntermediary):
             """INSERT INTO service (`postcode`, `name`, `addr1`, `addr2`, `email`, `telephone`, `type`) VALUES (\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\")"""
             % (service.postcode.postcode, service.name, service.address_line_1, service.address_line_2, service.email,
                service.telephone, service.service_type))
+        self.connection.commit()
 
     def add_postcode(self, postcode: pc.Postcode) -> DatabaseIntermediary.POSTCODE_EXIST | None:
 
@@ -142,6 +143,7 @@ class SQLDatabaseIntermediary(DatabaseIntermediary):
         cur = self.connection.cursor()
         cur.execute("""INSERT INTO postcode (`postcode`, `longitude`, `latitude`) VALUES (\"%s\", %s, %s)"""
                     % (postcode.postcode, postcode.longitude, postcode.latitude))
+        self.connection.commit()
 
     def update_service(self, service: sv.Service, name: str | None = None, email: str | None = None,
                        phonenumber: int | None = None) -> sv.Service:
@@ -152,17 +154,18 @@ class SQLDatabaseIntermediary(DatabaseIntermediary):
         cur = self.connection.cursor()
         names, query = [], []
         if name:
-            names.append("`name`")
+            names.append("name")
             query.append(name)
         if email:
-            names.append("`email`")
+            names.append("email")
             query.append(email)
         if phonenumber:
-            names.append("`telephone`")
+            names.append("telephone")
             query.append(phonenumber)
         query = "UPDATE `service` SET %s WHERE `name`=\"%s\"" % (
             ", ".join(["`%s`=\"%s\"" % (k, v) for k, v in zip(names, query)]), service.name)
         cur.execute(query)
+        self.connection.commit()
 
     def del_postcode(self,
                      postcode: pc.Postcode) -> DatabaseIntermediary.POSTCODE_NOT_EXIST | DatabaseIntermediary.FAILED_TO_DELETE | None:
@@ -180,7 +183,8 @@ class SQLDatabaseIntermediary(DatabaseIntermediary):
             return DatabaseIntermediary.DONT_KNOW_SERVICE
 
         cur = self.connection.cursor()
-        cur.execute("""DELETE FROM service WHERE name =\"%s\"""" % service.name)
+        cur.execute("""DELETE FROM service WHERE `name`.`name`=\"%s\"""" % service.name)
+        self.connection.commit()
 
     def get_service_by_name(self, name: str) -> sv.Service:
         if not self.is_connected:
@@ -193,4 +197,5 @@ class SQLDatabaseIntermediary(DatabaseIntermediary):
             return DatabaseIntermediary.DONT_KNOW_SERVICE
         else:
             postcode, name, addr1, addr2, email, telephone, stype = results[0]
-            return sv.Service(sv.Service(self.get_postcode(postcode), name, addr1, addr2, email, telephone, stype))
+            return sv.Service(self.get_postcode(postcode), name, addr1, addr2, email, telephone, stype)
+

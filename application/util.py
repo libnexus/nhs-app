@@ -1,6 +1,6 @@
 from json import loads
 
-from application.data.persistent_storage import APP_CONFIG
+from application.data.persistent_storage import AppConfig
 
 
 def repair_config_file():

@@ -1,21 +1,42 @@
+import sys
 from json import loads, dumps
-from os.path import isfile, abspath
+from os.path import abspath, join
 
 
-class PersistentStorage(dict):
-    def __init__(self, file_path: str):
-        super().__init__()
-        self._file_path = abspath(file_path + ".hidden")
-        if isfile(self._file_path):
-            with open(self._file_path, "r") as file:
-                self.update(loads(file.read()))
-
-    def save(self):
-        with open(self._file_path, "w+") as file:
-            file.write(dumps(self))
-        # SetFileAttributes(self._file_path, FILE_ATTRIBUTE_HIDDEN)
+def safe_path(file: str):
+    if hasattr(sys, "_MEIPASS"):
+        return abspath(join(sys._MEIPASS, file))
+    else:
+        return "resources/" + file
 
 
-APP_CONFIG = PersistentStorage("nhs-app.conf")
-APP_CONFIG["THEME:STANDARD"] = False
-APP_CONFIG["FILE:RECENT"] = []
+class AppConfig:
+    Data = {}
+
+    @classmethod
+    def restore_to_factory(cls):
+        ...
+
+    @classmethod
+    def save(cls):
+        open(safe_path("app.config"), "w+").write(dumps(AppConfig.Data))
+
+    @classmethod
+    def load_from_file(cls):
+        data = loads(safe_path("app.config"))
+        cls.Data.update(data)
+
+    @classmethod
+    def add_recent_file(cls, name: str, path: str):
+        cls.Data["recent"].append({"name": name, "path": path})
+
+    @classmethod
+    def set_colour_theme(cls, name: str):
+        cls.Data["theme"] = name
+
+    @classmethod
+    def get_colour_theme(cls, name: str):
+        return cls.Data["theme"] == name
+
+
+AppConfig.Data["theme"] = "dark"

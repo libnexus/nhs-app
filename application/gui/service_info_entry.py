@@ -17,7 +17,7 @@ class ServiceInformationEntry(Toplevel):
                  service_type: str,
                  database_connector: dbc.DatabaseIntermediary,
                  info_return_callback: Callable[[sv.Service], None]):
-        if pss.APP_CONFIG["THEME:STANDARD"]:
+        if pss.AppConfig.get_colour_theme("default"):
             self.config(background="light blue")
         """
 
@@ -54,31 +54,31 @@ class ServiceInformationEntry(Toplevel):
         # add edit elements to entry
 
         self._name_entry_frame = LabelFrame(self, text="Name")
-        if pss.APP_CONFIG["THEME:STANDARD"]:
+        if pss.AppConfig.get_colour_theme("default"):
             self._name_entry_frame.config(background="white")
             """White is professional and also simplistic so I think it would work for the label frame"""
         self._name_field = StringVar()
         self._name_entry = Entry(self._name_entry_frame, width=43, textvariable=self._name_field)
-        if pss.APP_CONFIG["THEME:STANDARD"]:
+        if pss.AppConfig.get_colour_theme("default"):
             self._name_entry.config(background="black")
             """Black is the main text colour as it is visible on all blackgrounds and professional"""
         self._name_entry.grid(row=0, column=0, columnspan=2, padx=10, pady=5)
 
         self._address_entry_frame = LabelFrame(self, text="Address")
-        if pss.APP_CONFIG["THEME:STANDARD"]:
+        if pss.AppConfig.get_colour_theme("default"):
             self._address_entry_frame.config(background="white")
             """White is professional and also simplistic so I think it would work for the label frame"""
         self._postcode_label = Label(self._address_entry_frame, text="Postcode")
-        if pss.APP_CONFIG["THEME:STANDARD"]:
+        if pss.AppConfig.get_colour_theme("default"):
             self._postcode_label.config(background="black")
             """Black is the main text colour which I think works for the postcode label"""
         self._postcode_field = StringVar()
         self._postcode_entry = Entry(self._address_entry_frame, width=10, textvariable=self._postcode_field)
-        if pss.APP_CONFIG["THEME:STANDARD"]:
+        if pss.AppConfig.get_colour_theme("default"):
             self._postcode_entry.config(background="black")
             """Black is the main text colour which I works for the post code entry"""
         self._address_1_label = Label(self._address_entry_frame, text="Address Line 1")
-        if pss.APP_CONFIG["THEME:STANDARD"]:
+        if pss.AppConfig.get_colour_theme("default"):
             self._address_1_label.config(background="black")
             """Black is the main text colour which is simplistic and works for the address line 1 """
         self._address_1l1 = StringVar()
@@ -86,21 +86,21 @@ class ServiceInformationEntry(Toplevel):
         self._address_2l1 = StringVar()
         self._address_2l2 = StringVar()
         self._address_1a_entry = Entry(self._address_entry_frame, width=29, textvariable=self._address_1l1)
-        if pss.APP_CONFIG["THEME:STANDARD"]:
+        if pss.AppConfig.get_colour_theme("default"):
             self._address_1a_entry.config(background="black")
             """For all the different address entries they are all going to be the colour black as they are
             are all text entries"""
         self._address_1b_entry = Entry(self._address_entry_frame, width=29, textvariable=self._address_1l2)
-        if pss.APP_CONFIG["THEME:STANDARD"]:
+        if pss.AppConfig.get_colour_theme("default"):
             self._address_1b_entry.config(background="black")
         self._address_2_label = Label(self._address_entry_frame, text="Address Line 2")
-        if pss.APP_CONFIG["THEME:STANDARD"]:
+        if pss.AppConfig.get_colour_theme("default"):
             self._address_2_label.config(background="black")
         self._address_2a_entry = Entry(self._address_entry_frame, width=29, textvariable=self._address_2l1)
-        if pss.APP_CONFIG["THEME:STANDARD"]:
+        if pss.AppConfig.get_colour_theme("default"):
             self._address_2a_entry.config(background="black")
         self._address_2b_entry = Entry(self._address_entry_frame, width=29, textvariable=self._address_2l2)
-        if pss.APP_CONFIG["THEME:STANDARD"]:
+        if pss.AppConfig.get_colour_theme("default"):
             self._address_2b_entry.config(background="black")
 
         self._postcode_label.grid(row=0, column=0, padx=5, pady=5, sticky=W)
@@ -113,23 +113,23 @@ class ServiceInformationEntry(Toplevel):
         self._address_2b_entry.grid(row=4, column=1, padx=(0, 10), pady=(0, 10))
 
         self._email_entry_frame = LabelFrame(self, text="Email")
-        if pss.APP_CONFIG["THEME:STANDARD"]:
+        if pss.AppConfig.get_colour_theme("default"):
             self._email_entry_frame.config(background="white")
             """The email label frame will be white as it is simplistic and professional"""
         self._email_field = StringVar()
         self._email_entry = Entry(self._email_entry_frame, width=43, textvariable=self._email_field)
-        if pss.APP_CONFIG["THEME:STANDARD"]:
+        if pss.AppConfig.get_colour_theme("default"):
             self._email_entry.config(background="black")
             """The email entry will be black as it is text and is visible on all backgrounds"""
         self._email_entry.grid(row=0, column=0, columnspan=2, padx=10, pady=5)
 
         self._telephone_entry_frame = LabelFrame(self, text="Telephone")
-        if pss.APP_CONFIG["THEME:STANDARD"]:
+        if pss.AppConfig.get_colour_theme("default"):
             self._telephone_entry_frame.config(background="white")
             """The telephone frame will be white as it is to do with labelFrame"""
         self._telephone_field = StringVar()
         self._telephone_entry = Entry(self._telephone_entry_frame, width=43, textvariable=self._telephone_field)
-        if pss.APP_CONFIG["THEME:STANDARD"]:
+        if pss.AppConfig.get_colour_theme("default"):
             self._telephone_entry.config(background="black")
             """The telephone entry will be the colour black as it text and will be visible
              on all backgrounds"""
@@ -144,7 +144,7 @@ class ServiceInformationEntry(Toplevel):
         # add submit button
 
         self._submit_button = Button(self, text="Submit", command=self._submit_service_form)
-        if pss.APP_CONFIG["THEME:STANDARD"]:
+        if pss.AppConfig.get_colour_theme("default"):
             self._submit_button.config(background="light blue")
             """The colour green will be used for the submit button because it stands out and works
             well when you have submitted the info to the database"""

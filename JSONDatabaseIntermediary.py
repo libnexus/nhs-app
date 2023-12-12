@@ -57,10 +57,10 @@ class JSONDatabaseIntermediary(DatabaseIntermediary):
                 yield objectify_service(service, self.get_postcode(postcode))
 
     def init_db(self) -> bool:
-        with open("database-files/ll-postcodes.json") as file:
+        with open("resources/ll-postcodes.json") as file:
             self._postcodes: dict = loads(file.read())
 
-        with open("database-files/services-info.json") as file:
+        with open("resources/services-info.json") as file:
             self._services: dict = loads(file.read())
 
         return bool(len(self._postcodes) and len(self._services))

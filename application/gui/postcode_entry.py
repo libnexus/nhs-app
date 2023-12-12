@@ -42,23 +42,24 @@ class PostcodeEntry(Toplevel):
 
         self.resizable(False, False)
         self.title("Postcode Entry")
-        if pss.APP_CONFIG["THEME:STANDARD"]:
-            self.config(background="light blue")
         # Postcode entry box
 
         self._postcode_entry_frame = LabelFrame(self, text="Postcode")
-        if pss.APP_CONFIG["THEME:STANDARD"]:
+        if pss.AppConfig.get_colour_theme("default"):
             self._postcode_entry_frame.config(background="white")
         self._postcode_field = StringVar()
         self._postcode_entry = ShadowEntryWidget(self._postcode_entry_frame, "e.g. ...", width=12,
                                                  textvariable=self._postcode_field, font='Arial 20')
+        if pss.AppConfig.get_colour_theme("dark"):
+            self._postcode_entry.config(background="black")
+            self._postcode_entry.config(foreground="white")
         self._postcode_entry.grid(row=0, column=0, padx=8, pady=4)
         self._postcode_entry_frame.pack()
 
         # submit button
 
         self._submit_button = Button(self._postcode_entry_frame, text="Submit", command=self._submit_postcode)
-        if pss.APP_CONFIG["THEME:STANDARD"]:
+        if pss.AppConfig.get_colour_theme("default"):
             self._submit_button.config(background="light blue")
         self._submit_button.grid(row=1, column=0, pady=4)
 

@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-from tkinter import Tk, BOTH, YES, Entry, Frame, FIRST, END, messagebox
+from tkinter import Tk, messagebox
 
 import SQLDatabaseIntermediary as sqldbi
-import application.gui.app as app
+import application.data.persistent_storage as pss
+import application.data.service as sv
 import application.gui.form as form
-import application.util as util
-from application.data.persistent_storage import APP_CONFIG
 import application.gui.postcode_entry as pce
-import application.gui.service_info_entry
 
 
 def __main__():
@@ -37,4 +35,25 @@ def __main__():
 
 
 if __name__ == "__main__":
-    __main__()
+    pass # __main__()
+
+if True:
+    from json import loads
+
+    data = loads(open(pss.safe_path("services-info.json"), "r").read())
+
+    db = sqldbi.SQLDatabaseIntermediary()
+    db.init_db()
+
+    for postcode, services in data.items():
+        for service in services:
+            if isinstance(service["address"], list):
+                service["address"] = ", ".join(service["address"])
+
+            address = service["address"].split(", ")
+            address1, address2 = ", ".join(address[:1]), ", ".join(address[1:])
+            db.add_service(sv.Service(db.get_postcode(postcode), service["name"], address1, address2, service["email"],
+                                      service["telephone"], service["type"].upper()))
+
+    db.connection.commit()
+    db.close_db()
