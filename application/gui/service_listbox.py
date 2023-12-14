@@ -66,6 +66,10 @@ class ServiceListbox(LabelFrame):
         self._shown_services.append(preview)
         self.update()
 
+    @property
+    def services(self) -> tuple[ServicePreview, ...]:
+        return tuple(self._shown_services)
+
 
 class ScrollView(Frame):
     """

@@ -19,10 +19,11 @@ def __main__():
 
     _found = False
 
-    def __found_postcode__(postcode):
+    def __found_postcode__(_postcode):
         nonlocal _found
+
         _found = True
-        main_form = form.Form(root, postcode, connector)
+        main_form = form.Form(root, _postcode, connector)
         main_form.pack()
 
     def __bad_leave__(e):
@@ -31,6 +32,7 @@ def __main__():
 
     _pce = pce.PostcodeEntry(root, connector, __found_postcode__)
     _pce.bind("<Destroy>", __bad_leave__)
+    root.winfo_toplevel().minsize()
     root.mainloop()
 
 

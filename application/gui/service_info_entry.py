@@ -7,6 +7,7 @@ import application.data.postcode as pc
 import application.data.service as sv
 import application.gui.service_listbox as service_listbox
 import application.data.persistent_storage as pss
+import application.gui.colour as colour
 from re import compile
 
 
@@ -257,6 +258,7 @@ class ServiceInformationEntry(Toplevel):
                                   address_line_1=self._address_1a_entry.get() + self._address_1b_entry.get(),
                                   address_line_2=self._address_2a_entry.get() + self._address_2b_entry.get(),
                                   email=self._email_entry.get(),
+                                  telephone=self._telephone_entry.get(),
                                   service_type=self._service_type)
             else:
                 return self._selected_service
@@ -265,7 +267,7 @@ class ServiceInformationEntry(Toplevel):
         service = self.get_selected_service()
         service and self._info_return_callback(service)
 
-    def get_services(self, amount=10) -> tuple[sv.Service, ...] | None:
+    def get_services(self, distance=10) -> tuple[sv.Service, ...] | None:
         """
         Simple service getter method which until reaching a result amount of either the given
         amount of services to find or all services there are to find, will repeatedly query
@@ -274,20 +276,8 @@ class ServiceInformationEntry(Toplevel):
         Because of this design choice, the method is more efficient the less results are required
         and the closer results are to the postcode.
 
-
-        :param amount: the amount of services to get
+        :param distance: the distance of services to get
 
         :return: a tuple of services found; or if the method couldn't query the database intermediary, None
         """
-        results: list[sv.Service, ...] = [...]
-        last_results: list[sv.Service, ...] = []
-        search_params = 1
-        while results != last_results:
-            last_results = results
-            if not self._dbc.command_able:
-                messagebox.showerror("Uh Oh", "The program was unable to look for services")
-                return
-            results = self._dbc.get_services(self._service_type, self._postcode,
-                                             1)
-            search_params += 1
-        return tuple(results)
+        return self._dbc.get_services(self._service_type, self._postcode, distance)

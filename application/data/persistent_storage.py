@@ -23,12 +23,16 @@ class AppConfig:
 
     @classmethod
     def load_from_file(cls):
-        data = loads(safe_path("app.config"))
+        data = loads(open(safe_path("app.config"), "r").read())
         cls.Data.update(data)
 
     @classmethod
     def add_recent_file(cls, name: str, path: str):
         cls.Data["recent"].append({"name": name, "path": path})
+
+    @classmethod
+    def get_recent_files(cls):
+        return cls.Data["recent"]
 
     @classmethod
     def set_colour_theme(cls, name: str):
@@ -39,4 +43,4 @@ class AppConfig:
         return cls.Data["theme"] == name
 
 
-AppConfig.Data["theme"] = "dark"
+AppConfig.load_from_file()

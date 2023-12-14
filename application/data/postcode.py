@@ -86,7 +86,7 @@ class Postcode:
     def _distance_between(long1: float, lat1: float, long2: float, lat2: float):
         """
         Uses the haversine formula to calculate the unobstructed "bird's eye view" distance between
-        two data over the surface of the earth as a globular entity.
+        two locations over the surface of the earth as a globular entity.
         An implementation of the code provided from https://www.movable-type.co.uk/scripts/latlong.html
 
         :param long1: the first postcode's longitude

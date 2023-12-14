@@ -1,18 +1,22 @@
 from __future__ import annotations
 
+from json import loads, dumps
 from tkinter import Frame, messagebox
+from tkinter import LabelFrame, Button, Menu
+from tkinter.filedialog import asksaveasfile, askopenfilename, asksaveasfilename
+from tkinter.messagebox import askyesno
 from typing import Collection
 
+import application.data.db_connector as db
+import application.data.persistent_storage as pss
+import application.gui.colour as colour
+import application.gui.postcode_entry as pce
 from application.data import postcode as pc, service as sv
 from application.data.form_container import FormInformation
 from application.data.postcode import Postcode
 from application.data.service import Service
 from application.gui.service_info_entry import ServiceInformationEntry
 from application.gui.service_listbox import ServiceListbox
-import application.data.persistent_storage as pss
-import application.data.db_connector as db
-from tkinter import LabelFrame, Button, Menu
-from tkinter.filedialog import asksaveasfile
 
 
 def _service_info(service: Service):
@@ -95,6 +99,8 @@ class Form(Frame, FormInformation):
         self._optician: Service | None = None
         self._schools: list[Service] = []
 
+        self._form_data = self._current_form_data()
+
         self.winfo_toplevel().title("Service selection form for %s" % self._postcode.nice_postcode)
         self.update()
 
@@ -173,10 +179,138 @@ class Form(Frame, FormInformation):
         # Will move for final
 
         self._menu = Menu(self)
-        self._menu.add_command(label="Export", command=self._export)
+
+        file_menu = Menu(self._menu, tearoff=0)
+        file_menu.add_command(label="New", command=self._file_new)
+        file_menu.add_command(label="Open", command=self._file_open)
+        # ref: https://coderslegacy.com/python/create-submenu-in-tkinter/
+        recent_menu = Menu(self._menu, tearoff=0)
+
+        file_menu.add_cascade(label="Open recent", menu=recent_menu)
+        for i, path in enumerate(pss.AppConfig.get_recent_files()):
+            recent_menu.add_command(label="%d. %s" % (i, truncate(path, 10)))
+
+        file_menu.add_command(label="Save", command=self._file_save)
+        file_menu.add_command(label="Save As", command=self._file_save_as)
+        file_menu.add_command(label="Export", command=self._file_export)
+        file_menu.add_separator()
+        # Added exit option in menu, not needed but nice addition
+        file_menu.add_command(label="Exit", command=self.quit)
+        self._menu.add_cascade(label="File", menu=file_menu)
+
+        form_menu = Menu(self._menu, tearoff=0)
+        form_menu.add_command(label="Clear", command=self._file_new)
+        form_menu.add_command(label="Copy", command=self._form_copy)
+        form_menu.add_separator()
+        self._menu.add_cascade(label="Form", menu=form_menu)
+
+        help_menu = Menu(self._menu, tearoff=0)
+        help_menu.add_command(label="Version Info", command=self._help_version_info)
+        self._menu.add_cascade(label="Help", menu=help_menu)
+
         self.winfo_toplevel().config(menu=self._menu)
 
-    def _export(self):
+        self._recent_menu = recent_menu
+        self._file_menu = file_menu
+        self._form_menu = form_menu
+        self._help_menu = help_menu
+
+    def _file_open(self):
+        if not askyesno("Are you sure?",
+                        "If you open a new file, your form will be overwritten. Are you sure you want to continue?"):
+            return
+
+        file_path = askopenfilename(defaultextension=".form", filetypes=[("Form files", "*.form")])
+
+        if file_path:
+            with open(file_path, "r") as file:
+                data = loads(file.read())
+        else:
+            return
+
+        self._form_data = self._current_form_data()
+
+    def _file_new(self):
+        if self._current_form_data() is not self._form_data:
+            response = messagebox.askyesnocancel("Unsaved Changes",
+                                                 "Your form will be overwritten. "
+                                                 "Do you want to save changes before creating a new form? ")
+
+            if response:
+                self._file_save()
+
+        def get_postcode(_postcode):
+            self._postcode = _postcode
+            self._gp = None
+            self._dentist = None
+            self._optician = None
+            self._schools = []
+
+            self._file_path = "."
+            self._form_data = self._current_form_data()
+
+            self._gp_submit_button.config(text="Select")
+            self._dentist_submit_button.config(text="Select")
+            self._optician_submit_button.config(text="Select")
+            if self._school_view:
+                self._school_view.destroy()
+                self._school_view = None
+                self._school_view_frame.destroy()
+                self._school_view_frame = None
+            self.winfo_toplevel().title("Service selection form for %s" % _postcode.nice_postcode)
+
+        pce.PostcodeEntry(self.winfo_toplevel(), self._database_intermediary, get_postcode)
+
+        self._form_data = self._current_form_data()
+
+    def _file_save(self):
+        """
+            changed json files to .form files as the extension is more explanatory
+            use an attribute for the file path and trigger the dialog when that attribute is None
+            that way if the attribute is not None it automatically saves (normal behaviour of a save command)
+                """
+
+        if self._file_path is None:
+            _file_path = asksaveasfilename(defaultextension=".form", filetypes=[("Form files", "*.form")])
+            if _file_path:
+                self._file_path = _file_path
+            else:
+                return
+
+        data = {}
+        if self._file_path:
+            data = {
+                "gp": self.export_service_to_json(self.gp) if self.gp is not None else None,
+                "dentist": self.export_service_to_json(self.dentist) if self.dentist is not None else None,
+                "optician": self.export_service_to_json(self.optician) if self.optician is not None else None,
+                "schools": [self.export_service_to_json(school) for school in self.schools],
+            }
+
+        self._save_dict_as_json(data, self._file_path)
+        self._form_data = self._current_form_data()
+        messagebox.showinfo("Success!", "The file was successfully saved")
+
+    def _file_save_as(self):
+        self._file_path = asksaveasfilename(defaultextension=".form", filetypes=[("Form files", "*.form")])
+
+        data = {}
+        if self._file_path:
+            data = {
+                "gp": self.export_service_to_json(self.gp) if self.gp is not None else "",
+                "dentist": self.export_service_to_json(self.dentist) if self.dentist is not None else "",
+                "optician": self.export_service_to_json(self.optician) if self.optician is not None else "",
+                "schools": [self.export_service_to_json(school) for school in self.schools],
+            }
+
+        self._save_dict_as_json(data, self._file_path)
+        self._form_data = self._current_form_data()
+        messagebox.showinfo("Success!", "The file was successfully saved")
+
+    def _save_dict_as_json(self, data: dict, file_path: str):
+        with open(file_path, "w") as file:
+            file.write(dumps(data))
+
+    def _file_export(self):
         text = ""
 
         if self._gp:
@@ -195,9 +329,26 @@ class Form(Frame, FormInformation):
 
         file = asksaveasfile(mode='w', initialfile="%s - %s" % (self.postcode.nice_postcode, id(self)),
                              filetypes=[("Form files", "*.form"), ("Text files", "*.txt")])
-        file.write(text)
+        file.write(text.lstrip())
         file.close()
-        messagebox.showinfo("Success!", "The file was successfully saved")
+        messagebox.showinfo("Success!", "The file was successfully exported")
+
+    def _help_version_info(self):
+        messagebox.showinfo("Version info",
+                            "Application version: V2.0\n"
+                            "Developer names: Shaun Cameron, Ynyr Elis-Davies, Cameron Brown, Ricardo De Jesus\n"
+                            "Release date: 14/12/2023")
+
+    def _form_copy(self):
+        # Put the string representation into the clipboard
+        # ref: python.hotexamples.com/examples/tkinter/Tk/clipboard_clear/python-tk-clipboard_clear-method-examples.html
+        self.winfo_toplevel().clipboard_clear()
+        self.winfo_toplevel().clipboard_append(dumps({
+            "gp": self.export_service_to_json(self.gp) if self.gp is not None else None,
+            "dentist": self.export_service_to_json(self.dentist) if self.dentist is not None else None,
+            "optician": self.export_service_to_json(self.optician) if self.optician is not None else None,
+            "schools": [self.export_service_to_json(school) for school in self.schools],
+        }))
 
     def _del_school(self, service: Service, widget: Frame):
         self._schools.remove(service)
