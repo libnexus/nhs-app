@@ -4,8 +4,8 @@ from tkinter import messagebox, Toplevel, Entry, LabelFrame, StringVar, Button, 
 from typing import Callable
 
 import application.data.db_connector as dbc
-import application.data.persistent_storage as pss
 import application.data.postcode as pc
+import application.gui.colour as colour
 
 
 class ShadowEntryWidget(Entry):

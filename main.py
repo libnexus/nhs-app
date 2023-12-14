@@ -37,25 +37,4 @@ def __main__():
 
 
 if __name__ == "__main__":
-    pass # __main__()
-
-if True:
-    from json import loads
-
-    data = loads(open(pss.safe_path("services-info.json"), "r").read())
-
-    db = sqldbi.SQLDatabaseIntermediary()
-    db.init_db()
-
-    for postcode, services in data.items():
-        for service in services:
-            if isinstance(service["address"], list):
-                service["address"] = ", ".join(service["address"])
-
-            address = service["address"].split(", ")
-            address1, address2 = ", ".join(address[:1]), ", ".join(address[1:])
-            db.add_service(sv.Service(db.get_postcode(postcode), service["name"], address1, address2, service["email"],
-                                      service["telephone"], service["type"].upper()))
-
-    db.connection.commit()
-    db.close_db()
+    __main__()

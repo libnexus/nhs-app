@@ -128,7 +128,14 @@ class Form(Frame, FormInformation):
         self._optician_submit_button.pack(padx=10, pady=10)
         self._optician_select_frame.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
 
-        self._school_view = None
+        self._school_view: None | ServiceListbox = None
+        self._school_view_frame: None | Frame = None
+
+        def truncate(string: str, places: int, suffix: str = "...") -> str:
+            if len(string) < places + len(suffix):
+                return string
+            else:
+                return string[:len(suffix)] + suffix
 
         def _schools_view():
             if self._school_view is None:
@@ -150,6 +157,7 @@ class Form(Frame, FormInformation):
         self._add_school_frame.grid(row=1, column=1, sticky="nsew", padx=10, pady=10)
 
         # Will move for final
+        self._file_path = None
 
         self._menu = Menu(self)
 
@@ -369,6 +377,14 @@ class Form(Frame, FormInformation):
             information += _service_info(school)
 
         return information
+
+    def _current_form_data(self):
+        return {
+            'gp': self.gp,
+            'dentist': self.dentist,
+            'optician': self.optician,
+            'schools': self.schools,
+        }
 
     @staticmethod
     def export_service_to_json(service: Service) -> dict:

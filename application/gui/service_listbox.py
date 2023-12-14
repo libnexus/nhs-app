@@ -1,5 +1,6 @@
 from tkinter import LabelFrame, Label, Canvas, Scrollbar, Frame, BOTH, LEFT, RIGHT, Y, NW, Event
 
+import application.gui.colour as colour
 import application.data.service as sv
 
 
