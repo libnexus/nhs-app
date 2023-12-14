@@ -55,76 +55,43 @@ class ServiceInformationEntry(Toplevel):
         # add edit elements to entry
 
         self._name_entry_frame = LabelFrame(self, text="Name")
-        if pss.AppConfig.get_colour_theme("default"):
-            self._name_entry_frame.config(background="white")
-        elif pss.AppConfig.get_colour_theme("dark"):
-            self._name_entry_frame.config(background="grey")
-            """White is professional and also simplistic so I think it would work for the label frame"""
+        self._name_entry_frame.config(background=colour.COLOUR.foreground)
+        """White is professional and also simplistic so I think it would work for the label frame"""
         self._name_field = StringVar()
         self._name_entry = Entry(self._name_entry_frame, width=43, textvariable=self._name_field)
-        if pss.AppConfig.get_colour_theme("default"):
-            self._name_entry.config(background="black")
-        elif pss.AppConfig.get_colour_theme("dark"):
-            self._name_entry.config(background="white")
-            """Black is the main text colour as it is visible on all blackgrounds and professional"""
+        self._name_entry.config(background=colour.COLOUR.text)
+        """Black is the main text colour as it is visible on all backgrounds and professional"""
         self._name_entry.grid(row=0, column=0, columnspan=2, padx=10, pady=5)
 
         self._address_entry_frame = LabelFrame(self, text="Address")
-        if pss.AppConfig.get_colour_theme("default"):
-            self._address_entry_frame.config(background="white")
-        elif pss.AppConfig.get_colour_theme("dark"):
-            self._address_entry_frame.config(background="grey")
-            """White is professional and also simplistic so I think it would work for the label frame"""
+        self._address_entry_frame.config(background=colour.COLOUR.foreground)
+        """White is professional and also simplistic so I think it would work for the label frame"""
         self._postcode_label = Label(self._address_entry_frame, text="Postcode")
-        if pss.AppConfig.get_colour_theme("default"):
-            self._postcode_label.config(background="black")
-        elif pss.AppConfig.get_colour_theme("dark"):
-            self._postcode_label.config(background="white")
-            """Black is the main text colour which I think works for the postcode label"""
+        self._postcode_label.config(background=colour.COLOUR.text)
+        """Black is the main text colour which I think works for the postcode label"""
         self._postcode_field = StringVar()
         self._postcode_entry = Entry(self._address_entry_frame, width=10, textvariable=self._postcode_field)
-        if pss.AppConfig.get_colour_theme("default"):
-            self._postcode_entry.config(background="black")
-        elif pss.AppConfig.get_colour_theme("dark"):
-            self._postcode_entry.config(background="white")
-            """Black is the main text colour which I works for the post code entry"""
+        self._postcode_entry.config(background=colour.COLOUR.text)
+        """Black is the main text colour which I works for the post code entry"""
         self._address_1_label = Label(self._address_entry_frame, text="Address Line 1")
-        if pss.AppConfig.get_colour_theme("default"):
-            self._address_1_label.config(background="black")
-        elif pss.AppConfig.get_colour_theme("dark"):
-            self._address_1_label.config(background="white")
-            """Black is the main text colour which is simplistic and works for the address line 1 """
+        self._address_1_label.config(background=colour.COLOUR.text)
+        """Black is the main text colour which is simplistic and works for the address line 1 """
         self._address_1l1 = StringVar()
         self._address_1l2 = StringVar()
         self._address_2l1 = StringVar()
         self._address_2l2 = StringVar()
         self._address_1a_entry = Entry(self._address_entry_frame, width=29, textvariable=self._address_1l1)
-        if pss.AppConfig.get_colour_theme("default"):
-            self._address_1a_entry.config(background="black")
-        elif pss.AppConfig.get_colour_theme("dark"):
-            self._address_1a_entry.config(background="white")
-            """For all the different address entries they are all going to be the colour black as they are
+        self._address_1a_entry.config(background=colour.COLOUR.text)
+        """For all the different address entries they are all going to be the colour black as they are
             are all text entries"""
         self._address_1b_entry = Entry(self._address_entry_frame, width=29, textvariable=self._address_1l2)
-        if pss.AppConfig.get_colour_theme("default"):
-            self._address_1b_entry.config(background="black")
-        elif pss.AppConfig.get_colour_theme("dark"):
-            self._address_1b_entry.config(background="white")
+        self._address_1b_entry.config(background=colour.COLOUR.text)
         self._address_2_label = Label(self._address_entry_frame, text="Address Line 2")
-        if pss.AppConfig.get_colour_theme("default"):
-            self._address_2_label.config(background="black")
-        elif pss.AppConfig.get_colour_theme("dark"):
-            self._address_2_label.config(background="white")
+        self._address_2_label.config(background=colour.COLOUR.text)
         self._address_2a_entry = Entry(self._address_entry_frame, width=29, textvariable=self._address_2l1)
-        if pss.AppConfig.get_colour_theme("default"):
-            self._address_2a_entry.config(background="black")
-        elif pss.AppConfig.get_colour_theme("dark"):
-            self._address_2a_entry.config(background="white")
+        self._address_2a_entry.config(background=colour.COLOUR.text)
         self._address_2b_entry = Entry(self._address_entry_frame, width=29, textvariable=self._address_2l2)
-        if pss.AppConfig.get_colour_theme("default"):
-            self._address_2b_entry.config(background="black")
-        elif pss.AppConfig.get_colour_theme("dark"):
-            self._address_2b_entry.config(background="white")
+        self._address_2b_entry.config(background=colour.COLOUR.text)
 
         self._postcode_label.grid(row=0, column=0, padx=5, pady=5, sticky=W)
         self._postcode_entry.grid(row=0, column=1, padx=(0, 10), sticky=W)
@@ -136,33 +103,21 @@ class ServiceInformationEntry(Toplevel):
         self._address_2b_entry.grid(row=4, column=1, padx=(0, 10), pady=(0, 10))
 
         self._email_entry_frame = LabelFrame(self, text="Email")
-        if pss.AppConfig.get_colour_theme("default"):
-            self._email_entry_frame.config(background="white")
-        elif pss.AppConfig.get_colour_theme("dark"):
-            self._email_entry_frame.config(background="grey")
-            """The email label frame will be white as it is simplistic and professional"""
+        self._email_entry_frame.config(background=colour.COLOUR.foreground)
+        """The email label frame will be white as it is simplistic and professional"""
         self._email_field = StringVar()
         self._email_entry = Entry(self._email_entry_frame, width=43, textvariable=self._email_field)
-        if pss.AppConfig.get_colour_theme("default"):
-            self._email_entry.config(background="black")
-        elif pss.AppConfig.get_colour_theme("dark"):
-            self._email_entry.config(background="white")
-            """The email entry will be black as it is text and is visible on all backgrounds"""
+        self._email_entry.config(background=colour.COLOUR.text)
+        """The email entry will be black as it is text and is visible on all backgrounds"""
         self._email_entry.grid(row=0, column=0, columnspan=2, padx=10, pady=5)
 
         self._telephone_entry_frame = LabelFrame(self, text="Telephone")
-        if pss.AppConfig.get_colour_theme("default"):
-            self._telephone_entry_frame.config(background="white")
-        elif pss.AppConfig.get_colour_theme("dark"):
-            self._telephone_entry_frame.config(background="grey")
-            """The telephone frame will be white as it is to do with labelFrame"""
+        self._telephone_entry_frame.config(background=colour.COLOUR.foreground)
+        """The telephone frame will be white as it is to do with labelFrame"""
         self._telephone_field = StringVar()
         self._telephone_entry = Entry(self._telephone_entry_frame, width=43, textvariable=self._telephone_field)
-        if pss.AppConfig.get_colour_theme("default"):
-            self._telephone_entry.config(background="black")
-        elif pss.AppConfig.get_colour_theme("dark"):
-            self._telephone_entry.config(background="white")
-            """The telephone entry will be the colour black as it text and will be visible
+        self._telephone_entry.config(background=colour.COLOUR.text)
+        """The telephone entry will be the colour black as it text and will be visible
              on all backgrounds"""
         self._telephone_entry.grid(row=0, column=0, columnspan=2, padx=10, pady=5)
 

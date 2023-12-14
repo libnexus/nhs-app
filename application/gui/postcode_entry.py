@@ -56,8 +56,7 @@ class PostcodeEntry(Toplevel):
         # submit button
 
         self._submit_button = Button(self._postcode_entry_frame, text="Submit", command=self._submit_postcode)
-        if pss.AppConfig.get_colour_theme("default"):
-            self._submit_button.config(background="light blue")
+        self._submit_button.config(background=colour.COLOUR.light)
         self._submit_button.grid(row=1, column=0, pady=4)
 
         self.bind("<Return>", lambda e: self._submit_postcode())
