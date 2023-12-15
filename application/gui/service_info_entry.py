@@ -2,7 +2,6 @@ from tkinter import Toplevel, Entry, Label, LabelFrame, Button, W, messagebox, N
 from typing import Callable, Literal
 
 import application.data.db_connector as dbc
-import application.data.persistent_storage as pss
 import application.data.postcode as pc
 import application.data.service as sv
 import application.gui.colour as colour
@@ -16,8 +15,6 @@ class ServiceInformationEntry(Toplevel):
                  service_type: str,
                  database_connector: dbc.DatabaseIntermediary,
                  info_return_callback: Callable[[sv.Service], None]):
-        if pss.AppConfig.get_colour_theme("default"):
-            self.config(background="light blue")
         """
 
         :param master: the widget / frame that this object is a slave of (belongs to/in)
@@ -28,6 +25,7 @@ class ServiceInformationEntry(Toplevel):
         :param info_return_callback:
         """
         super().__init__(master)
+        self.config(background=colour.COLOUR.medium)
 
         # set up entry information
 
@@ -49,47 +47,48 @@ class ServiceInformationEntry(Toplevel):
         services = sorted(services, key=lambda s: s.postcode.distance_between(self._postcode))
         for service in services:
             self._service_listbox_frame.add_new_service(service)
+        self._service_listbox_frame.scroll_to_top()
 
         # add edit elements to entry
 
         self._name_entry_frame = LabelFrame(self, text="Name")
-        self._name_entry_frame.config(background=colour.COLOUR.foreground)
+        self._name_entry_frame.config(background=colour.COLOUR.medium, foreground=colour.COLOUR.foreground)
         """White is professional and also simplistic so I think it would work for the label frame"""
         self._name_field = StringVar()
         self._name_entry = Entry(self._name_entry_frame, width=43, textvariable=self._name_field)
-        self._name_entry.config(background=colour.COLOUR.text)
+        self._name_entry.config(background=colour.COLOUR.light)
         """Black is the main text colour as it is visible on all backgrounds and professional"""
         self._name_entry.grid(row=0, column=0, columnspan=2, padx=10, pady=5)
 
         self._address_entry_frame = LabelFrame(self, text="Address")
-        self._address_entry_frame.config(background=colour.COLOUR.foreground)
+        self._address_entry_frame.config(background=colour.COLOUR.medium, foreground=colour.COLOUR.foreground)
         """White is professional and also simplistic so I think it would work for the label frame"""
         self._postcode_label = Label(self._address_entry_frame, text="Postcode")
-        self._postcode_label.config(background=colour.COLOUR.text)
+        self._postcode_label.config(background=colour.COLOUR.medium, foreground=colour.COLOUR.foreground)
         """Black is the main text colour which I think works for the postcode label"""
         self._postcode_field = StringVar()
         self._postcode_entry = Entry(self._address_entry_frame, width=10, textvariable=self._postcode_field)
-        self._postcode_entry.config(background=colour.COLOUR.text)
+        self._postcode_entry.config(background=colour.COLOUR.light)
         """Black is the main text colour which I works for the post code entry"""
         self._address_1_label = Label(self._address_entry_frame, text="Address Line 1")
-        self._address_1_label.config(background=colour.COLOUR.text)
+        self._address_1_label.config(background=colour.COLOUR.medium, foreground=colour.COLOUR.foreground)
         """Black is the main text colour which is simplistic and works for the address line 1 """
         self._address_1l1 = StringVar()
         self._address_1l2 = StringVar()
         self._address_2l1 = StringVar()
         self._address_2l2 = StringVar()
         self._address_1a_entry = Entry(self._address_entry_frame, width=29, textvariable=self._address_1l1)
-        self._address_1a_entry.config(background=colour.COLOUR.text)
+        self._address_1a_entry.config(background=colour.COLOUR.light)
         """For all the different address entries they are all going to be the colour black as they are
             are all text entries"""
         self._address_1b_entry = Entry(self._address_entry_frame, width=29, textvariable=self._address_1l2)
-        self._address_1b_entry.config(background=colour.COLOUR.text)
+        self._address_1b_entry.config(background=colour.COLOUR.light)
         self._address_2_label = Label(self._address_entry_frame, text="Address Line 2")
-        self._address_2_label.config(background=colour.COLOUR.text)
+        self._address_2_label.config(background=colour.COLOUR.medium, foreground=colour.COLOUR.foreground)
         self._address_2a_entry = Entry(self._address_entry_frame, width=29, textvariable=self._address_2l1)
-        self._address_2a_entry.config(background=colour.COLOUR.text)
+        self._address_2a_entry.config(background=colour.COLOUR.light)
         self._address_2b_entry = Entry(self._address_entry_frame, width=29, textvariable=self._address_2l2)
-        self._address_2b_entry.config(background=colour.COLOUR.text)
+        self._address_2b_entry.config(background=colour.COLOUR.light)
 
         self._postcode_label.grid(row=0, column=0, padx=5, pady=5, sticky=W)
         self._postcode_entry.grid(row=0, column=1, padx=(0, 10), sticky=W)
@@ -101,20 +100,20 @@ class ServiceInformationEntry(Toplevel):
         self._address_2b_entry.grid(row=4, column=1, padx=(0, 10), pady=(0, 10))
 
         self._email_entry_frame = LabelFrame(self, text="Email")
-        self._email_entry_frame.config(background=colour.COLOUR.foreground)
+        self._email_entry_frame.config(background=colour.COLOUR.medium, foreground=colour.COLOUR.foreground)
         """The email label frame will be white as it is simplistic and professional"""
         self._email_field = StringVar()
         self._email_entry = Entry(self._email_entry_frame, width=43, textvariable=self._email_field)
-        self._email_entry.config(background=colour.COLOUR.text)
+        self._email_entry.config(background=colour.COLOUR.light)
         """The email entry will be black as it is text and is visible on all backgrounds"""
         self._email_entry.grid(row=0, column=0, columnspan=2, padx=10, pady=5)
 
         self._telephone_entry_frame = LabelFrame(self, text="Telephone")
-        self._telephone_entry_frame.config(background=colour.COLOUR.foreground)
+        self._telephone_entry_frame.config(background=colour.COLOUR.medium, foreground=colour.COLOUR.foreground)
         """The telephone frame will be white as it is to do with labelFrame"""
         self._telephone_field = StringVar()
         self._telephone_entry = Entry(self._telephone_entry_frame, width=43, textvariable=self._telephone_field)
-        self._telephone_entry.config(background=colour.COLOUR.text)
+        self._telephone_entry.config(background=colour.COLOUR.light)
         """The telephone entry will be the colour black as it text and will be visible
              on all backgrounds"""
         self._telephone_entry.grid(row=0, column=0, columnspan=2, padx=10, pady=5)
@@ -128,11 +127,10 @@ class ServiceInformationEntry(Toplevel):
         # add submit button
 
         self._submit_button = Button(self, text="Submit", command=self._submit_service_form)
-        if pss.AppConfig.get_colour_theme("default"):
-            self._submit_button.config(background="light blue")
-            """The colour green will be used for the submit button because it stands out and works
+        self._submit_button.config(background=colour.COLOUR.light, foreground=colour.COLOUR.foreground)
+        """The colour green will be used for the submit button because it stands out and works
             well when you have submitted the info to the database"""
-        self._submit_button.grid(row=4, column=4, columnspan=4, sticky=NSEW, padx=6, pady=(2, 10))
+        self._submit_button.grid(row=4, column=4, columnspan=4, sticky=NSEW, padx=6, pady=(5, 10))
 
         self._selected_service: sv.Service | None = None
 

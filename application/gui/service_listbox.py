@@ -1,4 +1,4 @@
-from tkinter import LabelFrame, Label, Canvas, Scrollbar, Frame, BOTH, LEFT, RIGHT, Y, NW, Event
+from tkinter import LabelFrame, Label, Canvas, Scrollbar, Frame, BOTH, LEFT, RIGHT, Y, Event
 
 import application.data.service as sv
 import application.gui.colour as colour
@@ -9,11 +9,11 @@ class ServicePreview(Frame):
         super().__init__(master, *args, **kwargs)
         self._service_object = service
         self._name = Label(self, text=service.name_truncated)
-        self._name.config(background=colour.COLOUR.text)
+        self._name.config(background=colour.COLOUR.light)
         """Black is chosen because anything that is to do with text should be the colour black as it is
             simplistic as well as being visible on all backgrounds"""
         self._email = Label(self, text=service.postcode.nice_postcode)
-        self._email.config(background=colour.COLOUR.text)
+        self._email.config(background=colour.COLOUR.light)
         """Black is chosen because anything that is to do with text should be the colour black as it is
                simplistic as well as being visible on all backgrounds"""
         self._name.grid(row=0, column=0)
@@ -22,7 +22,8 @@ class ServicePreview(Frame):
         self._name.bind("<Double-Button-1>", self.double_click)
         self._email.bind("<Double-Button-1>", self.double_click)
         """The Service preview frame will be white as it is professional and simplistic"""
-        self.config(background=colour.COLOUR.foreground)
+        self.config(background=colour.COLOUR.light)
+        self.config(highlightbackground=colour.COLOUR.background, highlightthickness=2)
 
     def double_click(self, event: Event):
         self._propagate_callback(self._service_object, self)
@@ -40,6 +41,11 @@ class ServiceListbox(LabelFrame):
         self._propagate_callback = propagate_callback
         self._shown_services: list[ServicePreview, ...] = []
         """White is chosen as it is professional and simplistic as well as linking to the nhs"""
+        self.config(background=colour.COLOUR.medium)
+        self._top = self._display_frame.canvas.yview()[0]
+
+    def scroll_to_top(self):
+        self._display_frame.canvas.yview_moveto(self._top)
 
     def clear_services(self):
         for preview in self._shown_services:
@@ -49,7 +55,7 @@ class ServiceListbox(LabelFrame):
 
     def add_new_service(self, service: sv.Service):
         preview = ServicePreview(self._display_frame.scrollable_frame, service, self._propagate_callback)
-        preview.pack(fill=Y, expand=False)
+        preview.pack(fill=Y, expand=True)
         self._shown_services.append(preview)
         self.update()
 
@@ -65,16 +71,18 @@ class ScrollView(Frame):
 
     def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
+        self.config(background=colour.COLOUR.medium)
         self._canvas = Canvas(self, *args, **kwargs)
+        self._canvas.config(background=colour.COLOUR.medium)
         self._scrollbar = Scrollbar(self, orient="vertical", command=self._canvas.yview)
         self._scrollbar.config(background=colour.COLOUR.background)
         """The scroll bar will be dark blue because it is the main primary colour that we will use for the app"""
-        self._scrollable_frame = Frame(self._canvas)
+        self._scrollable_frame = Frame(self._canvas, padx=40, background=colour.COLOUR.medium)
         self._scrollable_frame.bind("<Configure>",
                                     lambda e: self._canvas.configure(scrollregion=self._canvas.bbox("all")))
-        self._canvas.create_window((0, 0), window=self.scrollable_frame, anchor=NW)
+        self._canvas.create_window((0, 0), window=self.scrollable_frame)
         self._canvas.configure(yscrollcommand=self._scrollbar.set)
-        self._canvas.pack(side=LEFT, expand=False)
+        self._canvas.pack(side=LEFT, expand=True)
         self._scrollbar.pack(side=RIGHT, fill=Y)
 
     @property
@@ -84,3 +92,7 @@ class ScrollView(Frame):
     @property
     def canvas(self) -> Canvas:
         return self._canvas
+
+    @property
+    def scrollbar(self) -> Scrollbar:
+        return self._scrollbar

@@ -14,10 +14,6 @@ class AppConfig:
     Data = {}
 
     @classmethod
-    def restore_to_factory(cls):
-        ...
-
-    @classmethod
     def save(cls):
         open(safe_path("app.config"), "w+").write(dumps(AppConfig.Data))
 
@@ -27,8 +23,12 @@ class AppConfig:
         cls.Data.update(data)
 
     @classmethod
-    def add_recent_file(cls, name: str, path: str):
-        cls.Data["recent"].append({"name": name, "path": path})
+    def add_recent_file(cls, path: str):
+        if path not in cls.Data["recent"]:
+            cls.Data["recent"].append(path)
+            if len(cls.Data["recent"]) > 10:
+                cls.Data.pop(0)
+            cls.save()
 
     @classmethod
     def get_recent_files(cls):
@@ -37,6 +37,7 @@ class AppConfig:
     @classmethod
     def set_colour_theme(cls, name: str):
         cls.Data["theme"] = name
+        cls.save()
 
     @classmethod
     def get_colour_theme(cls, name: str):

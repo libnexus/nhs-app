@@ -19,6 +19,13 @@ from application.gui.service_info_entry import ServiceInformationEntry
 from application.gui.service_listbox import ServiceListbox
 
 
+def truncate(string: str, places: int, suffix: str = "...") -> str:
+    if len(string) < places + len(suffix):
+        return string
+    else:
+        return string[:len(suffix)] + suffix
+
+
 def _service_info(service: Service):
     information = "    Name: %s\n" % service.name
     information += "    Address (1): %s\n" % service.address_line_1
@@ -99,6 +106,8 @@ class Form(Frame, FormInformation):
         self.winfo_toplevel().title("Service selection form for %s" % self._postcode.nice_postcode)
         self.update()
 
+        self.config(background=colour.COLOUR.medium)
+
         self._gp_select_frame = LabelFrame(self, text="Select GP")
         self._gp_select_frame.config(background=colour.COLOUR.medium)
         self._gp_submit_button = Button(self._gp_select_frame, text="Select",
@@ -131,12 +140,6 @@ class Form(Frame, FormInformation):
         self._school_view: None | ServiceListbox = None
         self._school_view_frame: None | Frame = None
 
-        def truncate(string: str, places: int, suffix: str = "...") -> str:
-            if len(string) < places + len(suffix):
-                return string
-            else:
-                return string[:len(suffix)] + suffix
-
         def _schools_view():
             if self._school_view is None:
                 self._school_view_frame = LabelFrame(self, text="Selected Schools (Double click to remove)")
@@ -167,9 +170,11 @@ class Form(Frame, FormInformation):
         # ref: https://coderslegacy.com/python/create-submenu-in-tkinter/
         recent_menu = Menu(self._menu, tearoff=0)
 
+        self._menu.configure(bg=colour.COLOUR.background)
+
         file_menu.add_cascade(label="Open recent", menu=recent_menu)
-        for i, path in enumerate(pss.AppConfig.get_recent_files()):
-            recent_menu.add_command(label="%d. %s" % (i, truncate(path, 10)))
+        self._recent_menu = recent_menu
+        self._refresh_recent_menu()
 
         file_menu.add_command(label="Save", command=self._file_save)
         file_menu.add_command(label="Save As", command=self._file_save_as)
@@ -182,6 +187,15 @@ class Form(Frame, FormInformation):
         form_menu = Menu(self._menu, tearoff=0)
         form_menu.add_command(label="Clear", command=self._file_new)
         form_menu.add_command(label="Copy", command=self._form_copy)
+        form_menu.add_command(label="Minimalist Mode", command=lambda: (
+            pss.AppConfig.set_colour_theme("nothing"),
+            messagebox.showinfo("Success",
+                                "Form theme changed to minimalist mode, restart the application to apply change")
+        ))
+        form_menu.add_command(label="Dark Mode", command=lambda: (
+            pss.AppConfig.set_colour_theme("dark"),
+            messagebox.showinfo("Success", "Form theme changed to dark mode, restart the application to apply change")
+        ))
         form_menu.add_separator()
         self._menu.add_cascade(label="Form", menu=form_menu)
 
@@ -191,10 +205,14 @@ class Form(Frame, FormInformation):
 
         self.winfo_toplevel().config(menu=self._menu)
 
-        self._recent_menu = recent_menu
         self._file_menu = file_menu
         self._form_menu = form_menu
         self._help_menu = help_menu
+
+    def _refresh_recent_menu(self):
+        self._recent_menu.delete(0, "end")
+        for i, path in enumerate(pss.AppConfig.get_recent_files()):
+            self._recent_menu.add_command(label="%d. %s" % (i, truncate(path, 30)))
 
     def _file_open(self):
         if not askyesno("Are you sure?",
@@ -270,9 +288,15 @@ class Form(Frame, FormInformation):
         self._save_dict_as_json(data, self._file_path)
         self._form_data = self._current_form_data()
         messagebox.showinfo("Success!", "The file was successfully saved")
+        pss.AppConfig.add_recent_file(self._file_path)
+        self._refresh_recent_menu()
 
     def _file_save_as(self):
-        self._file_path = asksaveasfilename(defaultextension=".form", filetypes=[("Form files", "*.form")])
+        _file_path = asksaveasfilename(defaultextension=".form", filetypes=[("Form files", "*.form")])
+        if _file_path:
+            self._file_path = _file_path
+        else:
+            return
 
         data = {}
         if self._file_path:
@@ -286,8 +310,11 @@ class Form(Frame, FormInformation):
         self._save_dict_as_json(data, self._file_path)
         self._form_data = self._current_form_data()
         messagebox.showinfo("Success!", "The file was successfully saved")
+        pss.AppConfig.add_recent_file(self._file_path)
+        self._refresh_recent_menu()
 
-    def _save_dict_as_json(self, data: dict, file_path: str):
+    @staticmethod
+    def _save_dict_as_json(data: dict, file_path: str):
         with open(file_path, "w") as file:
             file.write(dumps(data))
 
