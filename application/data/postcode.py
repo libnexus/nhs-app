@@ -1,4 +1,5 @@
-from __future__ import annotations 
+from __future__ import annotations
+
 from functools import cache
 from math import pi, sin, cos, atan2, sqrt
 

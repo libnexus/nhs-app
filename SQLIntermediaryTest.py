@@ -76,7 +76,8 @@ class IntermediaryTest(unittest.TestCase):
         self.assertIs(IntermediaryTest.Connector.get_postcode("LL573PL"), postcode)
 
     def test_add_del_service(self):
-        self.assertIsInstance(school := IntermediaryTest.Connector.get_service_by_name("Ysgol Abercaseg (Babanod)"), Service)
+        self.assertIsInstance(school := IntermediaryTest.Connector.get_service_by_name("Ysgol Abercaseg (Babanod)"),
+                              Service)
         IntermediaryTest.Connector.del_service(school)
         self.assertEqual(IntermediaryTest.Connector.get_service_by_name("Ysgol Abercaseg (Babanod)"), 0)
         IntermediaryTest.Connector.add_service(school)

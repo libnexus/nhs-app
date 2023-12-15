@@ -3,11 +3,9 @@ from __future__ import annotations
 import sqlite3
 from typing import Collection
 
+import application.data.persistent_storage as pss
 from application.data import postcode as pc, service as sv
 from application.data.db_connector import DatabaseIntermediary
-import application.data.persistent_storage as pss
-import sys
-from os.path import abspath, join
 
 
 class SQLDatabaseIntermediary(DatabaseIntermediary):
@@ -199,4 +197,3 @@ class SQLDatabaseIntermediary(DatabaseIntermediary):
         else:
             postcode, name, addr1, addr2, email, telephone, stype = results[0]
             return sv.Service(self.get_postcode(postcode), name, addr1, addr2, email, telephone, stype)
-

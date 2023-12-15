@@ -111,7 +111,6 @@ class DatabaseIntermediary(ABC):
         collection of results which match the given parameters
         """
 
-    
     """vvv Ricardo vvv"""
 
     @abstractmethod
@@ -123,7 +122,7 @@ class DatabaseIntermediary(ABC):
         :param service: the service to be added to the database
 
         """
-    
+
     @abstractmethod
     def add_postcode(self, postcode: pc.Postcode) -> POSTCODE_EXIST | None:
         """
@@ -135,7 +134,6 @@ class DatabaseIntermediary(ABC):
         :return: an error if postcode exists, else nothing
 
         """
-
 
     @abstractmethod
     def update_service(self, service: sv.Service, name: str, email: str, phonenumber: int) -> sv.Service:
@@ -168,7 +166,7 @@ class DatabaseIntermediary(ABC):
         :return: returns error if service doesnt exist or it failed, else nothing
 
         """
-    
+
     """^^^ Ricardo ^^^"""
 
     @abstractmethod

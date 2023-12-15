@@ -42,5 +42,9 @@ class AppConfig:
     def get_colour_theme(cls, name: str):
         return cls.Data["theme"] == name
 
+    @classmethod
+    def get_possible_themes(cls):
+        return cls.Data["possible-themes"]
+
 
 AppConfig.load_from_file()

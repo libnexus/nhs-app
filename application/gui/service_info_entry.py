@@ -1,14 +1,12 @@
-import re as regex
 from tkinter import Toplevel, Entry, Label, LabelFrame, Button, W, messagebox, NSEW, StringVar
 from typing import Callable, Literal
 
 import application.data.db_connector as dbc
+import application.data.persistent_storage as pss
 import application.data.postcode as pc
 import application.data.service as sv
-import application.gui.service_listbox as service_listbox
-import application.data.persistent_storage as pss
 import application.gui.colour as colour
-from re import compile
+import application.gui.service_listbox as service_listbox
 
 
 class ServiceInformationEntry(Toplevel):

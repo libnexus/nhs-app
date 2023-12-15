@@ -4,7 +4,6 @@ from tkinter import Tk, messagebox
 
 import SQLDatabaseIntermediary as sqldbi
 import application.data.persistent_storage as pss
-import application.data.service as sv
 import application.gui.form as form
 import application.gui.postcode_entry as pce
 
@@ -33,6 +32,13 @@ def __main__():
     _pce = pce.PostcodeEntry(root, connector, __found_postcode__)
     _pce.bind("<Destroy>", __bad_leave__)
     root.winfo_toplevel().minsize()
+
+    def __quit_program__(e):
+        connector.close_db()
+        pss.AppConfig.save()
+
+    root.bind("<Destroy>", __quit_program__)
+
     root.mainloop()
 
 

@@ -47,7 +47,8 @@ class PostcodeEntry(Toplevel):
         self._postcode_entry_frame = LabelFrame(self, text="Postcode")
         self._postcode_entry_frame.config(background=colour.COLOUR.medium)
         self._postcode_field = StringVar()
-        self._postcode_entry = ShadowEntryWidget(self._postcode_entry_frame, "e.g. LL585EW", foreground=colour.COLOUR.background, width=12,
+        self._postcode_entry = ShadowEntryWidget(self._postcode_entry_frame, "e.g. LL585EW",
+                                                 foreground=colour.COLOUR.background, width=12,
                                                  textvariable=self._postcode_field, font='Arial 20')
         self._postcode_entry.config(background=colour.COLOUR.light)
         self._postcode_entry.grid(row=0, column=0, padx=8, pady=4)
